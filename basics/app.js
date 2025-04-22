@@ -16,14 +16,15 @@ const server = http.createServer((req, res) => {
     if(url === '/message' && method === 'POST') {
         const body = [];
         req.on('data', chunk => body.push(chunk));
-        req.on('end', () => {
+        return req.on('end', () => {
             const parsedBody = Buffer.concat(body).toString();
             const message = parsedBody.split('=')[1];
-            fs.writeFileSync('output/message.txt', message);
+            fs.writeFile('output/message.txt', message, err => {
+                res.statusCode = 302;
+                res.setHeader('Location', '/');
+                return res.end();
+            });
         });
-        res.statusCode = 302;
-        res.setHeader('Location', '/');
-        return res.end();
     }
     res.setHeader('Content-Type', 'text/html');
     res.write('<html>');
