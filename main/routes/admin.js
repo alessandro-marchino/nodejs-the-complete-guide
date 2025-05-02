@@ -1,5 +1,3 @@
-const path = require('path');
-const rootDir = require('../util/path');
 const express = require('express');
 
 const products = [];
@@ -7,7 +5,7 @@ const products = [];
 const router = express.Router();
 
 router.get('/add-product', (_, res) => {
-    res.sendFile(path.join(rootDir, 'views', 'add-product.html'));
+    res.render('add-product');
 });
 router.post('/add-product', (req, res) => {
     products.push({ title: req.body.title });
