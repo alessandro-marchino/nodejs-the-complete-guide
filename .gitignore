@@ -178,3 +178,6 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux,node
 **/output/*
 !**/output/DND
+
+**/data/*
+!**/data/DND
