@@ -9,8 +9,7 @@ const path = require('path');
 const app = express();
 
 app.engine('hbs', expressHbs.engine({
-    extname: 'hbs',
-    defaultLayout: false
+    extname: 'hbs'
 }));
 app.set('view engine', 'hbs');
 app.set('views', 'views/handlebars');
