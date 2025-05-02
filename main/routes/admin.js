@@ -5,7 +5,7 @@ const products = [];
 const router = express.Router();
 
 router.get('/add-product', (_, res) => {
-    res.render('add-product');
+    res.render('add-product', { docTitle: 'Add Product' });
 });
 router.post('/add-product', (req, res) => {
     products.push({ title: req.body.title });
