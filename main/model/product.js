@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require("crypto");
 const basePath = require('../util/path');
 const p = path.join(basePath, 'data', 'products.json');
 
@@ -20,6 +21,7 @@ module.exports = class Product {
         this.price = price;
     }
     save() {
+        this.id = crypto.randomUUID();
         getProductsFromFile(products => {
             products.push(this);
             fs.writeFile(p, JSON.stringify(products), (err) => {
