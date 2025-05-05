@@ -28,6 +28,17 @@ exports.getEditProduct = (req, res) => {
     });
 };
 
+exports.postEditProduct = (req, res) => {
+    const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
+    const price = req.body.price;
+    const description = req.body.description;
+
+    const product = new Product(title, imageUrl, description, price);
+    product.save();
+    res.redirect('/products');
+};
+
 exports.getProducts = (_, res) => {
     Product.fetchAll(products => res.render('admin/products', { prods: products, pageTitle: 'Admin Products', path: '/admin/products' }));
 };
