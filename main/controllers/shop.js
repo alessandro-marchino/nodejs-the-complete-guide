@@ -6,9 +6,7 @@ exports.getProducts = (_, res) => {
 
 exports.getProductDetail = (req, res) => {
     const prodId = req.params.productId;
-    Product.findById(prodId, product => {
-        res.redirect('/')
-    });
+    Product.findById(prodId, product => res.render('shop/product-detail', { product, pageTitle: product.title, path: '/products' }));
 };
 
 exports.getIndex = (_, res) => {
