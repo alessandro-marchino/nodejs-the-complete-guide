@@ -4,8 +4,6 @@ services:
     environment:
       MYSQL_DATABASE: 'db'
       MYSQL_ROOT_PASSWORD: 'mypass'
-      # USER: nodejscomplete
-      # PWD: mypass
     ports:
       - '3306:3306'
     volumes:
