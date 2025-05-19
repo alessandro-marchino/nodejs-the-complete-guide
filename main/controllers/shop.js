@@ -16,7 +16,7 @@ exports.getProductDetail = (req, res) => {
 
 exports.getIndex = (_, res) => {
     Product.fetchAll()
-        .then(([ rows, fieldData ]) => {
+        .then(([ rows ]) => {
             res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/' })
         })
         .catch(e => console.log(e));
@@ -25,7 +25,7 @@ exports.getIndex = (_, res) => {
 exports.getCart = (_, res) => {
     Cart.getCart(cart => {
         Product.fetchAll()
-        .then(([ rows, fieldData ]) => {
+        .then(([ rows ]) => {
             const cartProducts = [];
             for(const product of rows) {
                 const cartProductData = cart?.products.find(prod => prod.id === product.id);
