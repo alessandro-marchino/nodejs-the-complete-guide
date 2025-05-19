@@ -21,12 +21,14 @@ exports.getEditProduct = (req, res) => {
     if(editMode !== 'true') {
         return res.redirect('/');
     }
-    Product.findById(req.params.productId, product => {
-        if(!product) {
-            return res.redirect('/');
-        }
-        res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product });
-    });
+    Product.findById(req.params.productId)
+        .then(([ products ]) => {
+            if(products.length === 0) {
+                return res.redirect('/');
+            }
+            res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product: products[0] })
+        })
+        .catch(e => console.log(e));
 };
 
 exports.postEditProduct = (req, res) => {
