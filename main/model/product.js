@@ -12,6 +12,8 @@ module.exports = class Product {
         this.price = price;
     }
     save() {
+        return db.execute('INSERT INTO products (title, price, description, imageUrl) VALUES (?, ?, ?, ?)',
+            [ this.title, this.price, this.description, this.imageUrl ]);
     }
     static deleteById(id) {
     }
