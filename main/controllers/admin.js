@@ -39,7 +39,11 @@ exports.postEditProduct = (req, res) => {
 };
 
 exports.getProducts = (_, res) => {
-    Product.fetchAll(products => res.render('admin/products', { prods: products, pageTitle: 'Admin Products', path: '/admin/products' }));
+    Product.fetchAll()
+        .then(([ rows, fieldData ]) => {
+            res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
+        })
+        .catch(e => console.log(e));
 };
 
 exports.postDeleteProduct = (req, res) => {

@@ -2,7 +2,11 @@ const Cart = require('../model/cart');
 const Product = require('../model/product');
 
 exports.getProducts = (_, res) => {
-    Product.fetchAll(products => res.render('shop/product-list', { prods: products, pageTitle: 'All products', path: '/products' }));
+    Product.fetchAll()
+        .then(([ rows, fieldData ]) => {
+            res.render('shop/product-list', { prods: rows, pageTitle: 'All products', path: '/products' })
+        })
+        .catch(e => console.log(e));
 };
 
 exports.getProductDetail = (req, res) => {
@@ -11,14 +15,19 @@ exports.getProductDetail = (req, res) => {
 };
 
 exports.getIndex = (_, res) => {
-    Product.fetchAll(products => res.render('shop/index', { prods: products, pageTitle: 'Shop', path: '/' }));
+    Product.fetchAll()
+        .then(([ rows, fieldData ]) => {
+            res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/' })
+        })
+        .catch(e => console.log(e));
 }
 
 exports.getCart = (_, res) => {
     Cart.getCart(cart => {
-        Product.fetchAll(products => {
+        Product.fetchAll()
+        .then(([ rows, fieldData ]) => {
             const cartProducts = [];
-            for(const product of products) {
+            for(const product of rows) {
                 const cartProductData = cart?.products.find(prod => prod.id === product.id);
                 if(cartProductData) {
                     cartProducts.push({ productData: product, qty: cartProductData.qty });
