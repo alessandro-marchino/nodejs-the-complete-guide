@@ -43,7 +43,7 @@ exports.postEditProduct = (req, res) => {
 
 exports.getProducts = (_, res) => {
     Product.findAll()
-        .then((rows) => {
+        .then(rows => {
             res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
         })
         .catch(e => console.log(e));

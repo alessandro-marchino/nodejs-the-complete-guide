@@ -3,7 +3,7 @@ const Product = require('../model/product');
 
 exports.getProducts = (_, res) => {
     Product.findAll()
-        .then((rows) => {
+        .then(rows => {
             res.render('shop/product-list', { prods: rows, pageTitle: 'All products', path: '/products' })
         })
         .catch(e => console.log(e));
@@ -12,7 +12,7 @@ exports.getProducts = (_, res) => {
 exports.getProductDetail = (req, res) => {
     const prodId = req.params.productId;
     Product.findByPk(prodId)
-        .then((product) => {
+        .then(product => {
             if(!product) {
                 return res.redirect('/');
             }
@@ -23,7 +23,7 @@ exports.getProductDetail = (req, res) => {
 
 exports.getIndex = (_, res) => {
     Product.findAll()
-        .then((rows) => {
+        .then(rows => {
             res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/' })
         })
         .catch(e => console.log(e));
@@ -48,18 +48,18 @@ exports.getCart = (_, res) => {
 
 exports.postCart = (req, res) => {
     const prodId = req.body.productId;
-    Product.findById(prodId)
-        .then(([ product ]) => {
-            Cart.addProduct(product[0].id, product[0].price, () => res.redirect('/cart'));
+    Product.findByPk(prodId)
+        .then(product => {
+            Cart.addProduct(product.id, product.price, () => res.redirect('/cart'));
         })
         .catch(e => console.log(e));
 }
 
 exports.postCartDeleteProduct = (req, res) => {
     const prodId = req.body.productId;
-    Product.findById(prodId)
-        .then(([ product ]) => {
-            Cart.deleteProduct(prodId, product[0].price, () => res.redirect('/cart'));
+    Product.findByPk(prodId)
+        .then(product => {
+            Cart.deleteProduct(prodId, product.price, () => res.redirect('/cart'));
         })
         .catch(e => console.log(e));
 }
