@@ -5,13 +5,12 @@ exports.getAddProduct = (_, res) => {
 };
 
 exports.postAddProduct = (req, res) => {
-    const title = req.body.title;
-    const imageUrl = req.body.imageUrl;
-    const price = req.body.price;
-    const description = req.body.description;
-
-    const product = new Product(null, title, imageUrl, description, price);
-    product.save()
+    Product.create({
+        title: req.body.title,
+        imageUrl: req.body.imageUrl,
+        price: req.body.price,
+        description: req.body.description
+    })
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.log(e));
 };
@@ -43,8 +42,8 @@ exports.postEditProduct = (req, res) => {
 };
 
 exports.getProducts = (_, res) => {
-    Product.fetchAll()
-        .then(([ rows ]) => {
+    Product.findAll()
+        .then((rows) => {
             res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
         })
         .catch(e => console.log(e));
