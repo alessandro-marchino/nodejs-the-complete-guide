@@ -31,14 +31,21 @@ exports.getEditProduct = (req, res) => {
 };
 
 exports.postEditProduct = (req, res) => {
-    const id = req.body.productId;
-    const title = req.body.title;
-    const imageUrl = req.body.imageUrl;
-    const price = req.body.price;
-    const description = req.body.description;
-
-    const product = new Product(id, title, imageUrl, description, price);
-    product.save(() => res.redirect('/admin/products'));
+    console.log(req.body.productId);
+    Product.findByPk(req.body.productId)
+        .then(product => {
+            console.log('FIRST', product)
+            if(!product) {
+                throw new Error('Product not present');
+            }
+            product.title = req.body.title;
+            product.imageUrl = req.body.imageUrl;
+            product.price = req.body.price;
+            product.description = req.body.description;
+            return product.save();
+        })
+        .then(() => res.redirect('/admin/products'))
+        .catch(e => console.log(e));
 };
 
 exports.getProducts = (_, res) => {
