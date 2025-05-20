@@ -34,21 +34,6 @@ exports.getCart = (req, res) => {
         .then(cart => cart.getProducts())
         .then(products => res.render('shop/cart', { pageTitle: 'Your cart', path: '/cart', products }))
         .catch(e => console.error(e));
-
-    // Cart.getCart(cart => {
-    //     Product.findAll()
-    //     .then(rows => {
-    //         const cartProducts = [];
-    //         for(const product of rows) {
-    //             const cartProductData = cart?.products.find(prod => prod.id === product.id);
-    //             if(cartProductData) {
-    //                 cartProducts.push({ productData: product, qty: cartProductData.qty });
-    //             }
-    //         }
-
-    //         res.render('shop/cart', { pageTitle: 'Your cart', path: '/cart', products: cartProducts })
-    //     })
-    // });
 }
 
 exports.postCart = (req, res) => {
