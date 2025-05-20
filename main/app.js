@@ -7,6 +7,11 @@ const errorController = require('./controllers/error');
 const path = require('path');
 
 const sequelize = require('./util/database');
+const Product = require('./model/product');
+const User = require('./model/user');
+
+Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+User.hasMany(Product);
 
 const app = express();
 
