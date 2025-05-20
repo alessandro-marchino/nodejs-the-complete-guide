@@ -11,12 +11,13 @@ exports.getProducts = (_, res) => {
 
 exports.getProductDetail = (req, res) => {
     const prodId = req.params.productId;
-    Product.findById(prodId)
-        .then(([ products ]) => {
-            if(products.length === 0) {
+    Product.findByPk(prodId)
+        .then((product) => {
+            console.log(product)
+            if(!product) {
                 return res.redirect('/');
             }
-            res.render('shop/product-detail', { product: products[0], pageTitle: products[0].title, path: '/products' })
+            res.render('shop/product-detail', { product, pageTitle: product.title, path: '/products' })
         })
         .catch(e => console.log(e));
 };

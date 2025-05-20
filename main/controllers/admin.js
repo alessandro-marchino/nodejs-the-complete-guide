@@ -20,12 +20,12 @@ exports.getEditProduct = (req, res) => {
     if(editMode !== 'true') {
         return res.redirect('/');
     }
-    Product.findById(req.params.productId)
-        .then(([ products ]) => {
-            if(products.length === 0) {
+    Product.findByPk(req.params.productId)
+        .then(product => {
+            if(!product) {
                 return res.redirect('/');
             }
-            res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product: products[0] })
+            res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product })
         })
         .catch(e => console.log(e));
 };
@@ -51,5 +51,5 @@ exports.getProducts = (_, res) => {
 
 exports.postDeleteProduct = (req, res) => {
     const id = req.body.productId;
-    Product.deleteById(id, () => res.redirect('/admin/products'));
+    Product.delete(id, () => res.redirect('/admin/products'));
 }
