@@ -44,14 +44,21 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 sequelize
-    // .sync()
-    .sync({ force: true })
+    .sync()
+    // .sync({ force: true })
     .then(() => User.findByPk(1))
     .then(user => {
         if(!user) {
             return User.create({ name: 'Max', email: 'test@example.com '});
         }
         return user;
+    })
+    .then(user => Promise.all([ user, user.getCart() ]))
+    .then(([ user, cart ]) => {
+        if(!cart) {
+            return user.createCart();
+        }
+        return cart;
     })
     .then(() => app.listen(3000))
     .catch(error => console.error(error));
