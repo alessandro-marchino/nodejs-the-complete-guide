@@ -20,12 +20,29 @@ app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+    User.findByPk(1)
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(e => console.error(e))
+})
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-sequelize.sync()
+sequelize
+    .sync()
+    // .sync({ force: true })
+    .then(() => User.findByPk(1))
+    .then(user => {
+        if(!user) {
+            return User.create({ name: 'Max', email: 'test@example.com '});
+        }
+        return user;
+    })
     .then(() => app.listen(3000))
     .catch(error => console.error(error));
