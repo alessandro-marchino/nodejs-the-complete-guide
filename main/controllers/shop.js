@@ -1,5 +1,3 @@
-const { where } = require('sequelize');
-const Cart = require('../model/cart');
 const Product = require('../model/product');
 
 exports.getProducts = (_, res) => {
@@ -77,6 +75,22 @@ exports.postCartDeleteProduct = (req, res) => {
 
 exports.getOrders = (_, res) => {
     res.render('shop/orders', { pageTitle: 'Your orders', path: '/orders' });
+}
+
+exports.postOrder = (req, res) => {
+    let products;
+    req.user.getCart()
+        .then(cart => cart.getProducts())
+        .then(prods => {
+            products = prods;
+            return req.user.createOrder()
+        })
+        .then(order => order.addProducts(products.map(product => {
+            product.orderItem = { quantity: product.cartItem.quantity };
+            return product;
+        })))
+        .then(() => res.redirect('/orders'))
+        .catch(e => console.log(e));
 }
 
 exports.getCheckout = (_, res) => {
