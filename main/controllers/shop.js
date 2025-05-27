@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const Cart = require('../model/cart');
 const Product = require('../model/product');
 
@@ -38,11 +39,26 @@ exports.getCart = (req, res) => {
 
 exports.postCart = (req, res) => {
     const prodId = req.body.productId;
-    Product.findByPk(prodId)
-        .then(product => {
-            Cart.addProduct(product.id, product.price, () => res.redirect('/cart'));
+    let fetchedCart;
+    req.user.getCart()
+        .then(cart => {
+            fetchedCart = cart;
+            return cart.getProducts({ where: { id: prodId }})
         })
-        .catch(e => console.log(e));
+        .then(products => {
+            let product;
+            if(products.length > 0) {
+                product = products[0]
+            }
+            let newQuantity = 1;
+            if(product) {
+                // newQuantity =
+            }
+            return Product.findByPk(prodId)
+                .then(product => fetchedCart.addProduct(product, { through: { quantity: newQuantity } }))
+        })
+        .then(() => res.redirect('/cart'))
+        .catch(e => console.error(e));
 }
 
 exports.postCartDeleteProduct = (req, res) => {
