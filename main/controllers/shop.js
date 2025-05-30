@@ -73,14 +73,20 @@ exports.postCartDeleteProduct = (req, res) => {
         .catch(e => console.error(e));
 }
 
-exports.getOrders = (_, res) => {
-    res.render('shop/orders', { pageTitle: 'Your orders', path: '/orders' });
+exports.getOrders = (req, res) => {
+    req.user.getOrders({ include: [ 'products' ] })
+        .then(orders => res.render('shop/orders', { pageTitle: 'Your orders', path: '/orders', orders }))
+        .catch(e => console.error(e))
 }
 
 exports.postOrder = (req, res) => {
     let products;
+    let fetchedCart;
     req.user.getCart()
-        .then(cart => cart.getProducts())
+        .then(cart => {
+            fetchedCart = cart;
+            return cart.getProducts();
+        })
         .then(prods => {
             products = prods;
             return req.user.createOrder()
@@ -89,6 +95,7 @@ exports.postOrder = (req, res) => {
             product.orderItem = { quantity: product.cartItem.quantity };
             return product;
         })))
+        .then(() => fetchedCart.setProducts(null))
         .then(() => res.redirect('/orders'))
         .catch(e => console.log(e));
 }
