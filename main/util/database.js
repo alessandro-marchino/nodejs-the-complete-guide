@@ -1,8 +1,13 @@
-const { Sequelize } = require('sequelize');
-const sequelize = new Sequelize('node-complete', 'nodejscomplete', 'mypass', {
-    host: 'localhost',
-    port: 3306,
-    dialect: 'mysql',
-    logging: false
-});
-module.exports = sequelize;
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
+
+const mongoConnect = cb => {
+    MongoClient.connect('mongodb://nodejscomplete:mypass@localhost:27017/?authSource=nodejscomplete')
+        .then(client => {
+            console.log('connected')
+            cb(client);
+        })
+        .catch(err => console.log(err));
+}
+
+module.exports = mongoConnect;
