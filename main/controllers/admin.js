@@ -33,22 +33,22 @@ exports.getEditProduct = (req, res) => {
         .catch(e => console.log(e));
 };
 
-// exports.postEditProduct = (req, res) => {
-//     req.user.getProducts({ where: { id: req.body.productId }})
-//         .then(products => {
-//             const product = products[0];
-//             if(!product) {
-//                 throw new Error('Product not present');
-//             }
-//             product.title = req.body.title;
-//             product.imageUrl = req.body.imageUrl;
-//             product.price = req.body.price;
-//             product.description = req.body.description;
-//             return product.save();
-//         })
-//         .then(() => res.redirect('/admin/products'))
-//         .catch(e => console.log(e));
-// };
+exports.postEditProduct = (req, res) => {
+    // req.user.getProducts({ where: { id: req.body.productId }})
+    Product.findById(req.params.productId)
+        .then(product => {
+            if(!product) {
+                throw new Error('Product not present');
+            }
+            product.title = req.body.title;
+            product.imageUrl = req.body.imageUrl;
+            product.price = req.body.price;
+            product.description = req.body.description;
+            return product.save();
+        })
+        .then(() => res.redirect('/admin/products'))
+        .catch(e => console.log(e));
+};
 
 exports.getProducts = (req, res) => {
     // req.user.getProducts()
