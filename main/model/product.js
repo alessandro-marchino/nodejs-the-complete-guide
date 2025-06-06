@@ -7,15 +7,15 @@ class Product {
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
-        this._id = id;
+        if(id) {
+            this._id = mongodb.ObjectId.createFromHexString(id);
+        }
     }
 
     save() {
         const db = getDb();
         if(this._id) {
-            const _id = this._id;
-            delete this._id;
-            return db.collection('products').updateOne({ _id: mongodb.ObjectId.createFromHexString(_id) }, { $set: this });
+            return db.collection('products').updateOne({ _id: this._id }, { $set: this });
         }
         return db.collection('products').insertOne(this);
     }
