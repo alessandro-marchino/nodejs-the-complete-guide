@@ -6,7 +6,7 @@ const mongoConnect = cb => {
     MongoClient.connect('mongodb://nodejscomplete:mypass@localhost:27017/?authSource=nodejscomplete')
         .then(client => {
             console.log('connected');
-            _db = client.db('shop');
+            _db = client.db('nodejscomplete');
             cb();
         })
         .catch(err => {

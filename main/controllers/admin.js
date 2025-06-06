@@ -1,14 +1,18 @@
+const Product = require("../model/product");
+
 exports.getAddProduct = (_, res) => {
     res.render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', editing: false });
 };
 
 exports.postAddProduct = (req, res) => {
-    req.user.createProduct({
-        title: req.body.title,
-        imageUrl: req.body.imageUrl,
-        price: req.body.price,
-        description: req.body.description
-    })
+    const product = new Product(req.body.title, req.body.price, req.body.description, req.body.imageUrl);
+    product.save()
+    // req.user.createProduct({
+    //     title: req.body.title,
+    //     imageUrl: req.body.imageUrl,
+    //     price: req.body.price,
+    //     description: req.body.description
+    // })
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.log(e));
 };
