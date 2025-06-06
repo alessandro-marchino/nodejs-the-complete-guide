@@ -10,7 +10,7 @@ exports.getProducts = (_, res) => {
 
 exports.getProductDetail = (req, res) => {
     const prodId = req.params.productId;
-    Product.findByPk(prodId)
+    Product.findById(prodId)
         .then(product => {
             if(!product) {
                 return res.redirect('/');
