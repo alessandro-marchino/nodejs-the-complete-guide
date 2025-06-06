@@ -22,6 +22,7 @@ app.use((req, res, next) => {
     //         next();
     //     })
     //     .catch(e => console.error(e))
+    next();
 })
 
 app.use('/admin', adminRoutes);
