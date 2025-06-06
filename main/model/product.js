@@ -12,9 +12,10 @@ class Product {
 
     save() {
         const db = getDb();
-        let dbOp;
         if(this._id) {
-            return db.collection('products').updateOne({ _id: mongodb.ObjectId.createFromHexString(this._id) }, { $set: this });
+            const _id = this._id;
+            delete this._id;
+            return db.collection('products').updateOne({ _id: mongodb.ObjectId.createFromHexString(_id) }, { $set: this });
         }
         return db.collection('products').insertOne(this);
     }

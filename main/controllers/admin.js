@@ -5,7 +5,7 @@ exports.getAddProduct = (_, res) => {
 };
 
 exports.postAddProduct = (req, res) => {
-    const product = new Product(req.body.title, req.body.price, req.body.description, req.body.imageUrl);
+    const product = new Product(req.body.title, req.body.price, req.body.imageUrl, req.body.description);
     product.save()
     // req.user.createProduct({
     //     title: req.body.title,
@@ -35,17 +35,13 @@ exports.getEditProduct = (req, res) => {
 
 exports.postEditProduct = (req, res) => {
     // req.user.getProducts({ where: { id: req.body.productId }})
-    Product.findById(req.params.productId)
-        .then(product => {
-            if(!product) {
-                throw new Error('Product not present');
-            }
-            product.title = req.body.title;
-            product.imageUrl = req.body.imageUrl;
-            product.price = req.body.price;
-            product.description = req.body.description;
-            return product.save();
-        })
+    const product = new Product(
+        req.body.title,
+        req.body.price,
+        req.body.description,
+        req.body.imageUrl,
+        req.body.productId);
+    product.save()
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.log(e));
 };
