@@ -17,21 +17,21 @@ exports.postAddProduct = (req, res) => {
         .catch(e => console.log(e));
 };
 
-// exports.getEditProduct = (req, res) => {
-//     const editMode = req.query.edit;
-//     if(editMode !== 'true') {
-//         return res.redirect('/');
-//     }
-//     req.user.getProducts({ where: { id: req.params.productId }})
-//         .then(products => {
-//             const product = products[0];
-//             if(!product) {
-//                 return res.redirect('/');
-//             }
-//             res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product: product })
-//         })
-//         .catch(e => console.log(e));
-// };
+exports.getEditProduct = (req, res) => {
+    const editMode = req.query.edit;
+    if(editMode !== 'true') {
+        return res.redirect('/');
+    }
+    //req.user.getProducts({ where: { id: req.params.productId }})
+    Product.findById(req.params.productId)
+        .then(product => {
+            if(!product) {
+                return res.redirect('/');
+            }
+            res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product: product })
+        })
+        .catch(e => console.log(e));
+};
 
 // exports.postEditProduct = (req, res) => {
 //     req.user.getProducts({ where: { id: req.body.productId }})
@@ -50,13 +50,14 @@ exports.postAddProduct = (req, res) => {
 //         .catch(e => console.log(e));
 // };
 
-// exports.getProducts = (req, res) => {
-//     req.user.getProducts()
-//         .then(rows => {
-//             res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
-//         })
-//         .catch(e => console.log(e));
-// };
+exports.getProducts = (req, res) => {
+    // req.user.getProducts()
+    Product.fetchAll()
+        .then(rows => {
+            res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
+        })
+        .catch(e => console.log(e));
+};
 
 // exports.postDeleteProduct = (req, res) => {
 //     const id = req.body.productId;
