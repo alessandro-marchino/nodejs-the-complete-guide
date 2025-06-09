@@ -5,7 +5,7 @@ exports.getAddProduct = (_, res) => {
 };
 
 exports.postAddProduct = (req, res) => {
-    const product = new Product(req.body.title, req.body.price, req.body.imageUrl, req.body.description);
+    const product = new Product(req.body.title, req.body.price, req.body.description, req.body.imageUrl, req.user._id);
     product.save()
     // req.user.createProduct({
     //     title: req.body.title,
@@ -40,6 +40,7 @@ exports.postEditProduct = (req, res) => {
         req.body.price,
         req.body.description,
         req.body.imageUrl,
+        req.user._id,
         req.body.productId);
     product.save()
         .then(() => res.redirect('/admin/products'))
