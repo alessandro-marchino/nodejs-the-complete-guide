@@ -31,15 +31,22 @@ class User {
             .collection('users')
             .updateOne({ _id: this._id }, { $set: { cart: updatedCart }});
     }
-    getCart() {
+    async getCart() {
+        const db = getDb();
+        const collection = db.collection('products');
+        const cursor = collection.find({ _id: { $in: this.cart.items.map(item => item.productId) } });
+        const products = await cursor.toArray();
+        return products.map(p => ({
+            ...p,
+            quantity: this.cart.items.find(item => item.productId.equals(p._id)).quantity
+        }));
+    }
+    deleteItemFromCart(productId) {
+        const pid = ObjectId.createFromHexString(productId);
+        const updatedCartItems = this.cart.items.filter(item => !item.productId.equals(pid));
         return getDb()
-            .collection('products')
-            .find({ _id: { $in: this.cart.items.map(item => item.productId) } })
-            .toArray()
-            .then(products => products.map(p => ({
-                ...p,
-                quantity: this.cart.items.find(item => item.productId.equals(p._id)).quantity
-            })));
+            .collection('users')
+            .updateOne({ _id: this._id }, { $set: { cart: { items: updatedCartItems } }});
     }
     static findById(userId) {
         return getDb()
