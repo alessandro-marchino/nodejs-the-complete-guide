@@ -7,9 +7,7 @@ class Product {
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
-        if(id) {
-            this._id = mongodb.ObjectId.createFromHexString(id);
-        }
+        this._id = id ? mongodb.ObjectId.createFromHexString(id) : null;
     }
 
     save() {
