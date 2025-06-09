@@ -65,8 +65,10 @@ class User {
             .updateOne({ _id: this._id }, { $set: { cart: this.cart }});
     }
     getOrders() {
-        // return getDb()
-        //     .collection('orders');
+        return getDb()
+            .collection('orders')
+            .find({ 'user._id': this._id })
+            .toArray();
     }
     static findById(userId) {
         return getDb()
