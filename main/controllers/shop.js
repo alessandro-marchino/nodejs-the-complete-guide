@@ -57,22 +57,7 @@ exports.getOrders = (req, res) => {
 }
 
 exports.postOrder = (req, res) => {
-    let products;
-    let fetchedCart;
-    req.user.getCart()
-        .then(cart => {
-            fetchedCart = cart;
-            return cart.getProducts();
-        })
-        .then(prods => {
-            products = prods;
-            return req.user.createOrder()
-        })
-        .then(order => order.addProducts(products.map(product => {
-            product.orderItem = { quantity: product.cartItem.quantity };
-            return product;
-        })))
-        .then(() => fetchedCart.setProducts(null))
+    req.user.addOrder()
         .then(() => res.redirect('/orders'))
         .catch(e => console.log(e));
 }
