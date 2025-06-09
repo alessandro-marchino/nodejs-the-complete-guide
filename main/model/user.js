@@ -16,13 +16,20 @@ class User {
         return db.collection('users').insertOne(this);
     }
     addToCart(product) {
-        console.log(product, this);
-        // const cartProduct = this.cart.items.findIndex(cp => cp._id === product._id);
-        const updatedCart = { items: [ { productId: product._id, quantity: 1 } ] };
+        const cartProductIndex = this.cart.items.findIndex(cp => cp.productId.equals(product._id));
+        const updatedCartItems = [ ...this.cart.items ];
+
+        let newQuantity = 1;
+        if(cartProductIndex >= 0) {
+            newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+            updatedCartItems[cartProductIndex].quantity = newQuantity;
+        } else {
+            updatedCartItems.push({ productId: product._id, quantity: newQuantity });
+        }
+        const updatedCart = { items: updatedCartItems };
         return getDb()
             .collection('users')
-            .updateOne({ _id: this._id }, { $set: { cart: updatedCart }})
-            .then(() => console.log('updated'));
+            .updateOne({ _id: this._id }, { $set: { cart: updatedCart }});
     }
     static findById(userId) {
         return getDb()
