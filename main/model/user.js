@@ -31,6 +31,16 @@ class User {
             .collection('users')
             .updateOne({ _id: this._id }, { $set: { cart: updatedCart }});
     }
+    getCart() {
+        return getDb()
+            .collection('products')
+            .find({ _id: { $in: this.cart.items.map(item => item.productId) } })
+            .toArray()
+            .then(products => products.map(p => ({
+                ...p,
+                quantity: this.cart.items.find(item => item.productId.equals(p._id)).quantity
+            })));
+    }
     static findById(userId) {
         return getDb()
             .collection('users')
