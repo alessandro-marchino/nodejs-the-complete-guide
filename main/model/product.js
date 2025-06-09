@@ -32,6 +32,11 @@ class Product {
             .find({ _id: mongodb.ObjectId.createFromHexString(productId) })
             .next();
     }
+    static deleteById(productId) {
+        return getDb()
+            .collection('products')
+            .deleteOne({ _id: mongodb.ObjectId.createFromHexString(productId) })
+    }
 }
 
 module.exports = Product;

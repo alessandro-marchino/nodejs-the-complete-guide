@@ -55,10 +55,11 @@ exports.getProducts = (req, res) => {
         .catch(e => console.log(e));
 };
 
-// exports.postDeleteProduct = (req, res) => {
-//     const id = req.body.productId;
-//     req.user.getProducts({ where: { id }})
-//         .then(products => products[0].destroy())
-//         .then(() => res.redirect('/admin/products'))
-//         .catch(e => console.error(e));
-// }
+exports.postDeleteProduct = (req, res) => {
+    const id = req.body.productId;
+    // req.user.getProducts({ where: { id }})
+    //     .then(products => products[0].destroy())
+    Product.deleteById(id)
+        .then(() => res.redirect('/admin/products'))
+        .catch(e => console.error(e));
+}
