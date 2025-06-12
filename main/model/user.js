@@ -40,4 +40,5 @@ userSchema.methods.addToCart = function(product) {
     this.cart = updatedCart;
     return this.save();
 }
+
 export default model('User', userSchema);

@@ -29,8 +29,9 @@ export function getIndex(_, res) {
 }
 
 export function getCart(req, res) {
-    req.user.getCart()
-        .then(products => res.render('shop/cart', { pageTitle: 'Your cart', path: '/cart', products }))
+    req.user
+        .populate('cart.items.productId')
+        .then(user => res.render('shop/cart', { pageTitle: 'Your cart', path: '/cart', products: user.cart.items }))
         .catch(e => console.error(e));
 }
 
