@@ -19,11 +19,10 @@ app.use(express.static(join(import.meta.dirname, 'public')));
 app.use((req, res, next) => {
     User.findOne({ name: 'Max' })
         .then(user => {
-            req.user = new User(user.name, user.email, user.cart, user._id);
+            req.user = user;
             next();
         })
         .catch(e => console.error(e));
-    next();
 })
 
 app.use('/admin', adminRoutes);
