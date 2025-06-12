@@ -31,6 +31,6 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-connect('mongodb://nodejscomplete:mypass@localhost:27017/?authSource=nodejscomplete')
+connect('mongodb://nodejscomplete:mypass@localhost:27017/nodejscomplete?authSource=nodejscomplete')
     .then(() => app.listen(3000))
     .catch(err => console.error(err));

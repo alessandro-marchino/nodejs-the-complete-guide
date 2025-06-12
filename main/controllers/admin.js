@@ -5,14 +5,8 @@ export function getAddProduct(_, res) {
 }
 
 export function postAddProduct(req, res) {
-    const product = new Product(req.body.title, req.body.price, req.body.description, req.body.imageUrl, req.user._id);
+    const product = new Product({ title: req.body.title, price: req.body.price, description: req.body.description, imageUrl: req.body.imageUrl });
     product.save()
-    // req.user.createProduct({
-    //     title: req.body.title,
-    //     imageUrl: req.body.imageUrl,
-    //     price: req.body.price,
-    //     description: req.body.description
-    // })
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.log(e));
 }
