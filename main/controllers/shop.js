@@ -1,7 +1,7 @@
 import Product from '../model/product.js';
 
 export function getProducts(_, res) {
-    Product.fetchAll()
+    Product.find()
         .then(rows => {
             res.render('shop/product-list', { prods: rows, pageTitle: 'All products', path: '/products' })
         })
@@ -21,7 +21,7 @@ export function getProductDetail(req, res) {
 }
 
 export function getIndex(_, res) {
-    Product.fetchAll()
+    Product.find()
         .then(rows => {
             res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/' })
         })

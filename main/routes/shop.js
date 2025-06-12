@@ -3,8 +3,8 @@ import * as shopController from '../controllers/shop.js';
 
 const router = Router();
 
-// router.get('/', shopController.getIndex);
-// router.get('/products', shopController.getProducts);
+router.get('/', shopController.getIndex);
+router.get('/products', shopController.getProducts);
 // router.get('/products/:productId', shopController.getProductDetail);
 // router.get('/cart', shopController.getCart);
 // router.post('/cart', shopController.postCart);
