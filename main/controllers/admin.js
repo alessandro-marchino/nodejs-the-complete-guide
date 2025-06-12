@@ -16,7 +16,6 @@ export function getEditProduct(req, res) {
     if(editMode !== 'true') {
         return res.redirect('/');
     }
-    //req.user.getProducts({ where: { id: req.params.productId }})
     Product.findById(req.params.productId)
         .then(product => {
             if(!product) {
@@ -28,22 +27,20 @@ export function getEditProduct(req, res) {
 }
 
 export function postEditProduct(req, res) {
-    // req.user.getProducts({ where: { id: req.body.productId }})
-    const product = new Product(
-        req.body.title,
-        req.body.price,
-        req.body.description,
-        req.body.imageUrl,
-        req.user._id,
-        req.body.productId);
-    product.save()
+    Product.findById(req.body.productId)
+        .then(product => {
+            product.title = req.body.title;
+            product.price = req.body.price;
+            product.description = req.body.description;
+            product.imageUrl = req.body.imageUrl;
+            return product.save();
+        })
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.log(e));
 }
 
 export function getProducts(req, res) {
-    // req.user.getProducts()
-    Product.fetchAll()
+    Product.find()
         .then(rows => {
             res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
         })
@@ -52,8 +49,6 @@ export function getProducts(req, res) {
 
 export function postDeleteProduct(req, res) {
     const id = req.body.productId;
-    // req.user.getProducts({ where: { id }})
-    //     .then(products => products[0].destroy())
     Product.deleteById(id)
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.error(e));
