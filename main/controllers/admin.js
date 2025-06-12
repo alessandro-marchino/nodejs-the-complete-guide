@@ -1,10 +1,10 @@
-const Product = require("../model/product");
+import Product from "../model/product.js";
 
-exports.getAddProduct = (_, res) => {
+export function getAddProduct(_, res) {
     res.render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', editing: false });
-};
+}
 
-exports.postAddProduct = (req, res) => {
+export function postAddProduct(req, res) {
     const product = new Product(req.body.title, req.body.price, req.body.description, req.body.imageUrl, req.user._id);
     product.save()
     // req.user.createProduct({
@@ -15,9 +15,9 @@ exports.postAddProduct = (req, res) => {
     // })
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.log(e));
-};
+}
 
-exports.getEditProduct = (req, res) => {
+export function getEditProduct(req, res) {
     const editMode = req.query.edit;
     if(editMode !== 'true') {
         return res.redirect('/');
@@ -31,9 +31,9 @@ exports.getEditProduct = (req, res) => {
             res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product: product })
         })
         .catch(e => console.log(e));
-};
+}
 
-exports.postEditProduct = (req, res) => {
+export function postEditProduct(req, res) {
     // req.user.getProducts({ where: { id: req.body.productId }})
     const product = new Product(
         req.body.title,
@@ -45,18 +45,18 @@ exports.postEditProduct = (req, res) => {
     product.save()
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.log(e));
-};
+}
 
-exports.getProducts = (req, res) => {
+export function getProducts(req, res) {
     // req.user.getProducts()
     Product.fetchAll()
         .then(rows => {
             res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
         })
         .catch(e => console.log(e));
-};
+}
 
-exports.postDeleteProduct = (req, res) => {
+export function postDeleteProduct(req, res) {
     const id = req.body.productId;
     // req.user.getProducts({ where: { id }})
     //     .then(products => products[0].destroy())

@@ -1,7 +1,28 @@
+const { Schema } = require('mongoose');
+
+const productSchema = new Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    imageUrl: {
+        type: String,
+        required: true
+    }
+});
+
 // const mongodb = require('mongodb');
 // const { getDb } = require('../util/database');
 
-// class Product {
+export default class Product {
 //     constructor(title, price, description, imageUrl, userId, id) {
 //         this.title = title;
 //         this.price = price;
@@ -37,6 +58,6 @@
 //             .collection('products')
 //             .deleteOne({ _id: mongodb.ObjectId.createFromHexString(productId) })
 //     }
-// }
+}
 
 // module.exports = Product;

@@ -1,7 +1,7 @@
 // const { ObjectId } = require('mongodb');
 // const { getDb } = require('../util/database');
 
-// class User {
+export default class User {
 //     constructor(username, email, cart, id) {
 //         this.name = username;
 //         this.email = email;
@@ -75,5 +75,5 @@
 //             .collection('users')
 //             .findOne({ _id: ObjectId.createFromHexString(userId) });
 //     }
-// }
+}
 // module.exports = User;
