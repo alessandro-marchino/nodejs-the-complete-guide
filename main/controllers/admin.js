@@ -41,6 +41,8 @@ export function postEditProduct(req, res) {
 
 export function getProducts(req, res) {
     Product.find()
+        // .select('title price -_id')
+        // .populate('userId')
         .then(rows => {
             res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
         })
