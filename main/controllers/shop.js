@@ -73,8 +73,9 @@ export function postOrder(req, res) {
                 },
                 products
             });
-            return order.save()
+            return order.save();
         })
+        .then(() => req.user.clearCart())
         .then(() => res.redirect('/orders'))
         .catch(e => console.log(e));
 }
