@@ -5,6 +5,7 @@ import { join } from 'path';
 
 import adminRoutes from './routes/admin.js';
 import shopRoutes from './routes/shop.js';
+import authRoutes from './routes/auth.js';
 import * as errorController from './controllers/error.js';
 
 import User from './model/user.js';
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 app.use(errorController.get404);
 
