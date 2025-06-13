@@ -1,4 +1,5 @@
 import Product from '../model/product.js';
+import Order from '../model/order.js';
 
 export function getProducts(_, res) {
     Product.find()
@@ -51,13 +52,29 @@ export function postCartDeleteProduct(req, res) {
 }
 
 export function getOrders(req, res) {
-    req.user.getOrders()
+    Order.find({ 'user.userId': req.user._id })
         .then(orders => res.render('shop/orders', { pageTitle: 'Your orders', path: '/orders', orders }))
         .catch(e => console.error(e))
 }
 
 export function postOrder(req, res) {
-    req.user.addOrder()
+    req.user
+        .populate('cart.items.productId')
+        .then(user => {
+            const products = user.cart.items.map(i => ({
+                quantity: i.quantity,
+                productData: i.productId
+            }));
+
+            const order = new Order({
+                user: {
+                    name: req.user.name,
+                    userId: req.user
+                },
+                products
+            });
+            return order.save()
+        })
         .then(() => res.redirect('/orders'))
         .catch(e => console.log(e));
 }
