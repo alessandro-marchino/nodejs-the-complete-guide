@@ -63,7 +63,7 @@ export function postOrder(req, res) {
         .then(user => {
             const products = user.cart.items.map(i => ({
                 quantity: i.quantity,
-                productData: i.productId
+                productData: { ...i.productId._doc }
             }));
 
             const order = new Order({
