@@ -8,7 +8,12 @@ export function postLogin(req, res) {
     User.findOne({ name: 'Max' })
         .then(user => {
             req.session.user = user;
-            res.redirect('/');
+            req.session.save((err) => {
+                if(err) {
+                    return console.error(err);
+                }
+                res.redirect('/')
+            });
         })
 }
 
