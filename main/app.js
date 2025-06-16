@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { connect } from 'mongoose';
 import { join } from 'path';
+import Session from 'express-session';
 
 import adminRoutes from './routes/admin.js';
 import shopRoutes from './routes/shop.js';
@@ -17,6 +18,7 @@ app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(join(import.meta.dirname, 'public')));
+app.use(Session({ secret: 'my secret', resave: false, saveUninitialized: false }));
 app.use((req, res, next) => {
     const cookies = (req.get('Cookie') ?? '')
         .split(/\s*;\s*/)
@@ -24,7 +26,7 @@ app.use((req, res, next) => {
             acc[cookie.split('=')[0]] = cookie.split('=').slice(1).join('=');
             return acc;
         }, {});
-    req.isLoggedIn = cookies['loggedIn'] === 'true';
+    res.locals.isAuthenticated = cookies['loggedIn'] === 'true';
     next();
 })
 app.use((req, res, next) => {

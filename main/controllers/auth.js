@@ -1,5 +1,5 @@
 export function getLogin(req, res) {
-    return res.render('auth/login', { pageTitle: 'Login', path: '/login', isAuthenticated: req.isLoggedIn });
+    return res.render('auth/login', { pageTitle: 'Login', path: '/login' });
 }
 
 export function postLogin(req, res) {
