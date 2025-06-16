@@ -20,13 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(join(import.meta.dirname, 'public')));
 app.use(Session({ secret: 'my secret', resave: false, saveUninitialized: false }));
 app.use((req, res, next) => {
-    const cookies = (req.get('Cookie') ?? '')
-        .split(/\s*;\s*/)
-        .reduce((acc, cookie) => {
-            acc[cookie.split('=')[0]] = cookie.split('=').slice(1).join('=');
-            return acc;
-        }, {});
-    res.locals.isAuthenticated = cookies['loggedIn'] === 'true';
+    res.locals.isAuthenticated = req.session?.isLoggedIn;
     next();
 })
 app.use((req, res, next) => {
