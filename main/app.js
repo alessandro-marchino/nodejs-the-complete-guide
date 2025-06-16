@@ -27,16 +27,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(join(import.meta.dirname, 'public')));
 app.use(Session({ secret: 'my secret', resave: false, saveUninitialized: false, store }));
 app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session?.isLoggedIn;
+    res.locals.isAuthenticated = !!req.session?.user;
+    if(req.session?.user) {
+        return req.user = User.findOne(req.session.user._id)
+            .then(user => {
+                req.user = user;
+                next();
+            });
+    }
     next();
-})
-app.use((req, res, next) => {
-    User.findOne({ name: 'Max' })
-        .then(user => {
-            req.user = user;
-            next();
-        })
-        .catch(e => console.error(e));
 });
 
 app.use('/admin', adminRoutes);
