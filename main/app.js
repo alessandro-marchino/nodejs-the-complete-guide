@@ -18,13 +18,23 @@ app.set('views', 'views');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(join(import.meta.dirname, 'public')));
 app.use((req, res, next) => {
+    const cookies = (req.get('Cookie') ?? '')
+        .split(/\s*;\s*/)
+        .reduce((acc, cookie) => {
+            acc[cookie.split('=')[0]] = cookie.split('=').slice(1).join('=');
+            return acc;
+        }, {});
+    req.isLoggedIn = cookies['loggedIn'] === 'true';
+    next();
+})
+app.use((req, res, next) => {
     User.findOne({ name: 'Max' })
         .then(user => {
             req.user = user;
             next();
         })
         .catch(e => console.error(e));
-})
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);

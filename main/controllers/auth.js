@@ -3,6 +3,6 @@ export function getLogin(req, res) {
 }
 
 export function postLogin(req, res) {
-    req.isAuthenticated = true;
+    res.setHeader('Set-Cookie', 'loggedIn=true');
     res.redirect('/');
 }
