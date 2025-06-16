@@ -218,6 +218,11 @@ form {
   color: white;
 }
 
+.main-header__item-list .btn {
+  background: transparent;
+  color: white;
+}
+
 @media (min-width: 768px) {
   .main-header__nav {
     display: flex;
