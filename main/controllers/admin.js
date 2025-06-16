@@ -1,7 +1,7 @@
 import Product from "../model/product.js";
 
-export function getAddProduct(_, res) {
-    res.render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', editing: false });
+export function getAddProduct(req, res) {
+    res.render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', isAuthenticated: req.isLoggedIn, editing: false });
 }
 
 export function postAddProduct(req, res) {
@@ -21,7 +21,7 @@ export function getEditProduct(req, res) {
             if(!product) {
                 return res.redirect('/');
             }
-            res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product: product })
+            res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', isAuthenticated: req.isLoggedIn, editing: true, product: product })
         })
         .catch(e => console.log(e));
 }
@@ -42,7 +42,7 @@ export function postEditProduct(req, res) {
 export function getProducts(req, res) {
     Product.find()
         .then(rows => {
-            res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
+            res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products', isAuthenticated: req.isLoggedIn })
         })
         .catch(e => console.log(e));
 }
