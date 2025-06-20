@@ -1,21 +1,32 @@
 import User from '../model/user.js';
-import { genSaltSync, hash, hashSync } from 'bcryptjs';
+import { hash, compare } from 'bcryptjs';
 
 export function getLogin(req, res) {
     return res.render('auth/login', { pageTitle: 'Login', path: '/login' });
 }
 
 export function postLogin(req, res) {
-    User.findOne({ name: 'Max' })
+    const { email, password } = req.body;
+    User.findOne({ email })
         .then(user => {
-            req.session.user = user;
-            req.session.save((err) => {
-                if(err) {
-                    return console.error(err);
-                }
-                res.redirect('/')
-            });
+            if(!user) {
+                return res.redirect('/login');
+            }
+            return compare(password, user.password)
+                .then(doMatch => {
+                    if(!doMatch) {
+                        return res.redirect('/login');
+                    }
+                    req.session.user = user;
+                    req.session.save((err) => {
+                        if(err) {
+                            return console.error(err);
+                        }
+                        res.redirect('/');
+                    });
+                })
         })
+        .catch(e => console.error(e));
 }
 
 export function postLogout(req, res) {
