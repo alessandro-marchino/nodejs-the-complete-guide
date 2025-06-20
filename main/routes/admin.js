@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import * as adminController from '../controllers/admin.js';
+import isAuth from '../middleware/is-auth.js';
 
 const router = Router();
+
+router.use(isAuth);
 
 router.get('/add-product', adminController.getAddProduct);
 router.post('/add-product', adminController.postAddProduct);

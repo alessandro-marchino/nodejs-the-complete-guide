@@ -1,9 +1,6 @@
 import Product from "../model/product.js";
 
 export function getAddProduct(req, res) {
-    if(!req.session.isAuthenticated) {
-        return res.redirect('/login');
-    }
     res.render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', editing: false });
 }
 
