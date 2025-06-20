@@ -26,6 +26,15 @@ export function getSignup(req, res) {
 }
 
 export function postSignup (req, res, next) {
-    // TODO
-    return res.redirect('/');
+    const { email, password, confirmPassword } = req.body;
+    User.findOne({ email })
+        .then(userDoc => {
+            if(userDoc) {
+                return res.redirect('/signup');
+            }
+            const user = new User({ email, password, cart: { items: [] } });
+            return user.save()
+        })
+        .then(() => redirect('/login'))
+        .catch(e => console.error(e));
 }

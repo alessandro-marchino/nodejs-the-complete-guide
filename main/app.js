@@ -45,15 +45,5 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 connect(MONGODB_URI)
-    .then(() => User.findOne({ name: 'Max' }))
-    .then(user => {
-        if(user) {
-            return user;
-        }
-        return new User({ name: 'Max', email: 'max@test.com', cart: {
-            items: []
-        }})
-        .save();
-    })
     .then(() => app.listen(3000))
     .catch(err => console.error(err));
