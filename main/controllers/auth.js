@@ -20,3 +20,12 @@ export function postLogin(req, res) {
 export function postLogout(req, res) {
     req.session.destroy(() => res.redirect('/'));
 }
+
+export function getSignup(req, res) {
+  return res.render('auth/signup', { pageTitle: 'Signup', path: '/signup' });
+}
+
+export function postSignup (req, res, next) {
+    // TODO
+    return res.redirect('/');
+}
