@@ -1,4 +1,5 @@
 import User from '../model/user.js';
+import { genSaltSync, hash, hashSync } from 'bcryptjs';
 
 export function getLogin(req, res) {
     return res.render('auth/login', { pageTitle: 'Login', path: '/login' });
@@ -32,9 +33,12 @@ export function postSignup (req, res, next) {
             if(userDoc) {
                 return res.redirect('/signup');
             }
-            const user = new User({ email, password, cart: { items: [] } });
+            return hash(password, 12);
+        })
+        .then(hashedPassword => {
+            const user = new User({ email, password: hashedPassword, cart: { items: [] } });
             return user.save()
         })
-        .then(() => redirect('/login'))
+        .then(() => res.redirect('/login'))
         .catch(e => console.error(e));
 }
