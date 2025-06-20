@@ -33,11 +33,11 @@ export function postSignup (req, res, next) {
             if(userDoc) {
                 return res.redirect('/signup');
             }
-            return hash(password, 12);
-        })
-        .then(hashedPassword => {
-            const user = new User({ email, password: hashedPassword, cart: { items: [] } });
-            return user.save()
+            return hash(password, 12)
+                .then(hashedPassword => {
+                    const user = new User({ email, password: hashedPassword, cart: { items: [] } });
+                    return user.save()
+                })
         })
         .then(() => res.redirect('/login'))
         .catch(e => console.error(e));
