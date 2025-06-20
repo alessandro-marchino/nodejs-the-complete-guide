@@ -4,6 +4,7 @@ import { connect } from 'mongoose';
 import { join } from 'path';
 import Session from 'express-session';
 import MongoDbStore from 'connect-mongodb-session';
+import csrf from 'csurf';
 
 import adminRoutes from './routes/admin.js';
 import shopRoutes from './routes/shop.js';
@@ -19,6 +20,7 @@ const store = new (MongoDbStore(Session))({
     uri: MONGODB_URI,
     collection: 'sessions'
 });
+const csrfProtection = csrf();
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -26,6 +28,10 @@ app.set('views', 'views');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(join(import.meta.dirname, 'public')));
 app.use(Session({ secret: 'my secret', resave: false, saveUninitialized: false, store }));
+app.use(csrfProtection, (req, res, next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+})
 app.use((req, res, next) => {
     res.locals.isAuthenticated = !!req.session?.user;
     if(req.session?.user) {
