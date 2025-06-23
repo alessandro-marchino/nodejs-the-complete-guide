@@ -21,7 +21,6 @@ const store = new (MongoDbStore(Session))({
     uri: MONGODB_URI,
     collection: 'sessions'
 });
-// const csrfProtection = csrf();
 const { csrfSynchronisedProtection } = csrfSync({
     getTokenFromRequest: req => req.body._csrf
 });
