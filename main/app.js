@@ -6,6 +6,7 @@ import Session from 'express-session';
 import MongoDbStore from 'connect-mongodb-session';
 // import csrf from 'csurf';
 import { csrfSync } from 'csrf-sync';
+import flash from 'connect-flash';
 
 import adminRoutes from './routes/admin.js';
 import shopRoutes from './routes/shop.js';
@@ -35,6 +36,7 @@ app.use(csrfSynchronisedProtection, (req, res, next) => {
     res.locals.csrfToken = req.csrfToken();
     next();
 })
+app.use(flash());
 app.use((req, res, next) => {
     res.locals.isAuthenticated = !!req.session?.user;
     if(req.session?.user) {

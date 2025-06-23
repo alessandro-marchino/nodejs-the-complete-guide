@@ -2,7 +2,7 @@ import User from '../model/user.js';
 import { hash, compare } from 'bcryptjs';
 
 export function getLogin(req, res) {
-    return res.render('auth/login', { pageTitle: 'Login', path: '/login' });
+    return res.render('auth/login', { pageTitle: 'Login', path: '/login', errorMessage: req.flash('error') });
 }
 
 export function postLogin(req, res) {
@@ -10,11 +10,13 @@ export function postLogin(req, res) {
     User.findOne({ email })
         .then(user => {
             if(!user) {
+                req.flash('error', 'Invalid email or password');
                 return res.redirect('/login');
             }
             return compare(password, user.password)
                 .then(doMatch => {
                     if(!doMatch) {
+                        req.flash('error', 'Invalid email or password');
                         return res.redirect('/login');
                     }
                     req.session.user = user;
