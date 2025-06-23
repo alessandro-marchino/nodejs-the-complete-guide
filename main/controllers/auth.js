@@ -2,7 +2,7 @@ import User from '../model/user.js';
 import { hash, compare } from 'bcryptjs';
 
 export function getLogin(req, res) {
-    return res.render('auth/login', { pageTitle: 'Login', path: '/login', errorMessage: req.flash('error') });
+    return res.render('auth/login', { pageTitle: 'Login', path: '/login', errorMessage: req.flash('error')[0] });
 }
 
 export function postLogin(req, res) {
