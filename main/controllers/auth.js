@@ -36,7 +36,7 @@ export function postLogout(req, res) {
 }
 
 export function getSignup(req, res) {
-  return res.render('auth/signup', { pageTitle: 'Signup', path: '/signup' });
+  return res.render('auth/signup', { pageTitle: 'Signup', path: '/signup', errorMessage: req.flash('error')[0] });
 }
 
 export function postSignup (req, res, next) {
@@ -44,6 +44,7 @@ export function postSignup (req, res, next) {
     User.findOne({ email })
         .then(userDoc => {
             if(userDoc) {
+                req.flash('error', 'Email exists already. Please pick a different one.');
                 return res.redirect('/signup');
             }
             return hash(password, 12)
@@ -51,7 +52,7 @@ export function postSignup (req, res, next) {
                     const user = new User({ email, password: hashedPassword, cart: { items: [] } });
                     return user.save()
                 })
+                .then(() => res.redirect('/login'))
         })
-        .then(() => res.redirect('/login'))
         .catch(e => console.error(e));
 }
