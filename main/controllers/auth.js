@@ -1,6 +1,7 @@
 import User from '../model/user.js';
 import { hash, compare } from 'bcryptjs';
 import { sendMail } from '../util/mail.js';
+import { randomBytes } from 'crypto';
 
 export function getLogin(req, res) {
     return res.render('auth/login', { pageTitle: 'Login', path: '/login' });
@@ -68,4 +69,38 @@ export function postSignup (req, res, next) {
 
 export function getReset(req, res) {
     return res.render('auth/reset', { pageTitle: 'Reset Password', path: '/reset' });
+}
+
+export function postReset(req, res) {
+    randomBytes(32, (err, buffer) => {
+        if(err) {
+            console.log(err);
+            return res.redirect('/reset');
+        }
+        const token = buffer.toString('hex');
+        User.findOne({ email: req.body.email })
+            .then(user => {
+                if(!user) {
+                    req.flash('error', 'No account with that email found');
+                    return res.redirect('/reset');
+                }
+                user.resetToken = token;
+                user.resetTokenExpiration = Date.now() + 3600000;
+                return user.save();
+            })
+            .then(() => {
+                res.redirect('/')
+                return sendMail({
+                    to: { address: req.body.email },
+                    from: { address: 'shop@node-complete.com', name: 'Node-Complete Shop' },
+                    subject: 'Password reset!',
+                    html: `
+                        <p>You requested a password reset</p>
+                        <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
+                    `
+                })
+            })
+            .catch(e => console.log(e))
+    });
+    // return res.render('auth/reset', { pageTitle: 'Reset Password', path: '/reset' });
 }
