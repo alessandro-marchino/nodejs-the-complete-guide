@@ -103,5 +103,34 @@ export function postReset(req, res) {
             })
             .catch(e => console.log(e))
     });
-    // return res.render('auth/reset', { pageTitle: 'Reset Password', path: '/reset' });
+}
+
+export function getNewPassword(req, res) {
+    User.findOne({ resetToken: req.params.token, resetTokenExpiration: { $gt: Date.now() } })
+        .then(user => {
+            if(!user) {
+                return res.redirect('/');
+            }
+            return res.render('auth/new-password', { pageTitle: 'New Password', path: '/new-password', userId: user._id.toString(), token: req.params.token });
+        })
+        .catch(e => console.log(e));
+}
+
+export function postNewPassword(req, res) {
+    const { userId, password, confirmPassword, token } = req.body;
+    User.findOne({ _id: userId, resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
+        .then(user => {
+            if(!user) {
+                return res.redirect('/');
+            }
+            return hash(password, 12)
+                .then(hashedPassword => {
+                    user.password = hashedPassword;
+                    user.resetToken = undefined;
+                    user.resetTokenExpiration = undefined;
+                    return user.save()
+                })
+                .then(() => res.redirect('/login'));
+        })
+        .catch(e => console.log(e));
 }
