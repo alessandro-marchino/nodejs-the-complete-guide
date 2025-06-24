@@ -1,5 +1,6 @@
 import User from '../model/user.js';
 import { hash, compare } from 'bcryptjs';
+import { sendMail } from '../util/mail.js';
 
 export function getLogin(req, res) {
     return res.render('auth/login', { pageTitle: 'Login', path: '/login', errorMessage: req.flash('error')[0] });
@@ -52,7 +53,15 @@ export function postSignup (req, res, next) {
                     const user = new User({ email, password: hashedPassword, cart: { items: [] } });
                     return user.save()
                 })
-                .then(() => res.redirect('/login'))
+                .then(() => {
+                    res.redirect('/login')
+                    return sendMail({
+                        to: email,
+                        from: 'shop@node-complete.com',
+                        subject: 'Signup succeeded!',
+                        html: '<h1>You have successfully signed up!</h1>'
+                    })
+                });
         })
         .catch(e => console.error(e));
 }
