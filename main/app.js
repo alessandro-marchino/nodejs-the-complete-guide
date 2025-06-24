@@ -39,6 +39,10 @@ app.use(csrfSynchronisedProtection, (req, res, next) => {
 })
 app.use(flash());
 app.use((req, res, next) => {
+    res.locals.errorMessage = req.flash('error')[0];
+    next();
+})
+app.use((req, res, next) => {
     res.locals.isAuthenticated = !!req.session?.user;
     if(req.session?.user) {
         return req.user = User.findOne(req.session.user._id)

@@ -3,7 +3,7 @@ import { hash, compare } from 'bcryptjs';
 import { sendMail } from '../util/mail.js';
 
 export function getLogin(req, res) {
-    return res.render('auth/login', { pageTitle: 'Login', path: '/login', errorMessage: req.flash('error')[0] });
+    return res.render('auth/login', { pageTitle: 'Login', path: '/login' });
 }
 
 export function postLogin(req, res) {
@@ -37,7 +37,7 @@ export function postLogout(req, res) {
 }
 
 export function getSignup(req, res) {
-  return res.render('auth/signup', { pageTitle: 'Signup', path: '/signup', errorMessage: req.flash('error')[0] });
+  return res.render('auth/signup', { pageTitle: 'Signup', path: '/signup' });
 }
 
 export function postSignup (req, res, next) {
@@ -56,12 +56,16 @@ export function postSignup (req, res, next) {
                 .then(() => {
                     res.redirect('/login')
                     return sendMail({
-                        to: email,
-                        from: 'shop@node-complete.com',
+                        to: { address: email },
+                        from: { address: 'shop@node-complete.com', name: 'Node-Complete Shop' },
                         subject: 'Signup succeeded!',
                         html: '<h1>You have successfully signed up!</h1>'
                     })
                 });
         })
         .catch(e => console.error(e));
+}
+
+export function getReset(req, res) {
+    return res.render('auth/reset', { pageTitle: 'Reset Password', path: '/reset' });
 }

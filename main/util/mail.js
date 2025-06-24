@@ -5,11 +5,11 @@ import { createTransport } from 'nodemailer';
  */
 
 const transporter = createTransport({
-    host: 'sandbox.smtp.mailtrap.io',
-    port: 2525,
+    host: process.env.EMAIL_HOST,
+    port: +process.env.EMAIL_PORT,
     auth: {
-        user: process.env.MAILTRAP_USER,
-        pass: process.env.MAILTRAP_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
     }
 });
 
