@@ -22,7 +22,7 @@ export function getEditProduct(req, res) {
     if(editMode !== 'true') {
         return res.redirect('/');
     }
-    Product.findById(req.params.productId)
+    Product.findOne({ _id: req.params.productId, userId: req.user._id })
         .then(product => {
             if(!product) {
                 return res.redirect('/');
@@ -35,13 +35,16 @@ export function getEditProduct(req, res) {
 export function postEditProduct(req, res) {
     Product.findById(req.body.productId)
         .then(product => {
+            if(!product.userId._id.equals(req.user._id)) {
+                return res.redirect('/');
+            }
             product.title = req.body.title;
             product.price = req.body.price;
             product.description = req.body.description;
             product.imageUrl = req.body.imageUrl;
-            return product.save();
+            return product.save()
+                .then(() => res.redirect('/admin/products'));
         })
-        .then(() => res.redirect('/admin/products'))
         .catch(e => console.log(e));
 }
 
@@ -54,7 +57,7 @@ export function getProducts(req, res) {
 }
 
 export function postDeleteProduct(req, res) {
-    Product.findByIdAndDelete(req.body.productId)
+    Product.deleteOne({ _id: req.body.productId, userId: req.user._id })
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.error(e));
 }
