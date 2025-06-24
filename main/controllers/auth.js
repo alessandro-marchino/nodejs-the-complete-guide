@@ -89,8 +89,9 @@ export function postReset(req, res) {
                 return user.save();
             })
             .then(() => {
-                res.redirect('/')
-                return sendMail({
+                res.redirect('/');
+                console.log({
+                // return sendMail({
                     to: { address: req.body.email },
                     from: { address: 'shop@node-complete.com', name: 'Node-Complete Shop' },
                     subject: 'Password reset!',
