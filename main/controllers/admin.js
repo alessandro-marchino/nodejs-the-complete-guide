@@ -5,7 +5,13 @@ export function getAddProduct(req, res) {
 }
 
 export function postAddProduct(req, res) {
-    const product = new Product({ title: req.body.title, price: req.body.price, description: req.body.description, imageUrl: req.body.imageUrl, userId: req.user });
+    const product = new Product({
+        title: req.body.title,
+        price: req.body.price,
+        description: req.body.description,
+        imageUrl: req.body.imageUrl,
+        userId: req.user
+    });
     product.save()
         .then(() => res.redirect('/admin/products'))
         .catch(e => console.log(e));
@@ -40,7 +46,7 @@ export function postEditProduct(req, res) {
 }
 
 export function getProducts(req, res) {
-    Product.find()
+    Product.find({ userId: req.user._id })
         .then(rows => {
             res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
         })
