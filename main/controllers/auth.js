@@ -10,27 +10,25 @@ export function getLogin(req, res) {
 
 export function postLogin(req, res) {
     const { email, password } = req.body;
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        return res.status(422).render('auth/login', { pageTitle: 'Login', path: '/login', errorMessage: errors.array()[0].msg });
+    }
     User.findOne({ email })
-        .then(user => {
-            if(!user) {
-                req.flash('error', 'Invalid email or password');
-                return res.redirect('/login');
-            }
-            return compare(password, user.password)
-                .then(doMatch => {
-                    if(!doMatch) {
-                        req.flash('error', 'Invalid email or password');
-                        return res.redirect('/login');
+        .then(user => compare(password, user.password)
+            .then(doMatch => {
+                if(!doMatch) {
+                    req.flash('error', 'Invalid email or password');
+                    return res.redirect('/login');
+                }
+                req.session.user = user;
+                req.session.save((err) => {
+                    if(err) {
+                        return console.error(err);
                     }
-                    req.session.user = user;
-                    req.session.save((err) => {
-                        if(err) {
-                            return console.error(err);
-                        }
-                        res.redirect('/');
-                    });
-                })
-        })
+                    res.redirect('/');
+                });
+            }))
         .catch(e => console.error(e));
 }
 

@@ -5,7 +5,20 @@ import User from '../model/user.js';
 
 const router = Router();
 router.get('/login', authController.getLogin);
-router.post('/login', authController.postLogin);
+router.post('/login', [
+    body('email')
+        .isEmail().withMessage('Please enter a valid email.')
+        .custom(value => User.findOne({ email: value })
+            .then(userDoc => {
+                if(!userDoc) {
+                    throw new Error('Invalid email or password.');
+                }
+            })
+        ),
+    body('password', 'Please enter a password with only numbers and text and at least 5 characters long.')
+        .isLength({ min: 5 })
+        .isAlphanumeric(),
+], authController.postLogin);
 router.post('/logout', authController.postLogout);
 
 router.get('/signup', authController.getSignup);
