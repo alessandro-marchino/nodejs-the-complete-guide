@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as authController from '../controllers/auth.js';
+import { check } from 'express-validator';
 
 const router = Router();
 router.get('/login', authController.getLogin);
@@ -7,7 +8,7 @@ router.post('/login', authController.postLogin);
 router.post('/logout', authController.postLogout);
 
 router.get('/signup', authController.getSignup);
-router.post('/signup', authController.postSignup);
+router.post('/signup', check('email').isEmail(), authController.postSignup);
 
 router.get('/reset', authController.getReset);
 router.post('/reset', authController.postReset);

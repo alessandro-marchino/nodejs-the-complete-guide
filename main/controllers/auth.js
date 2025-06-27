@@ -2,6 +2,7 @@ import User from '../model/user.js';
 import { hash, compare } from 'bcryptjs';
 import { sendMail } from '../util/mail.js';
 import { randomBytes } from 'crypto';
+import { validationResult } from 'express-validator';
 
 export function getLogin(req, res) {
     return res.render('auth/login', { pageTitle: 'Login', path: '/login' });
@@ -43,6 +44,10 @@ export function getSignup(req, res) {
 
 export function postSignup (req, res, next) {
     const { email, password, confirmPassword } = req.body;
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        return res.status(422).render('auth/signup', { pageTitle: 'Signup', path: '/signup', errorMessage: errors.array() });
+    }
     User.findOne({ email })
         .then(userDoc => {
             if(userDoc) {
