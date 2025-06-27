@@ -43,33 +43,25 @@ export function getSignup(req, res) {
 }
 
 export function postSignup (req, res, next) {
-    const { email, password, confirmPassword } = req.body;
+    const { email, password } = req.body;
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
         return res.status(422).render('auth/signup', { pageTitle: 'Signup', path: '/signup', errorMessage: errors.array()[0].msg });
     }
-    User.findOne({ email })
-        .then(userDoc => {
-            if(userDoc) {
-                req.flash('error', 'Email exists already. Please pick a different one.');
-                return res.redirect('/signup');
-            }
-            return hash(password, 12)
-                .then(hashedPassword => {
-                    const user = new User({ email, password: hashedPassword, cart: { items: [] } });
-                    return user.save()
-                })
-                .then(() => {
-                    res.redirect('/login')
-                    return sendMail({
-                        to: { address: email },
-                        from: { address: 'shop@node-complete.com', name: 'Node-Complete Shop' },
-                        subject: 'Signup succeeded!',
-                        html: '<h1>You have successfully signed up!</h1>'
-                    })
-                });
+    return hash(password, 12)
+        .then(hashedPassword => {
+            const user = new User({ email, password: hashedPassword, cart: { items: [] } });
+            return user.save()
         })
-        .catch(e => console.error(e));
+        .then(() => {
+            res.redirect('/login')
+            return sendMail({
+                to: { address: email },
+                from: { address: 'shop@node-complete.com', name: 'Node-Complete Shop' },
+                subject: 'Signup succeeded!',
+                html: '<h1>You have successfully signed up!</h1>'
+            })
+        }).catch(e => console.error(e));
 }
 
 export function getReset(req, res) {
