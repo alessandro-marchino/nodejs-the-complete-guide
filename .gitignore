@@ -181,3 +181,6 @@ dist
 
 **/data/*
 !**/data/DND
+
+package-lock.json
+
