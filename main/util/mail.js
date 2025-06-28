@@ -18,6 +18,10 @@ const transporter = createTransport({
  * @returns { Promise<SentMessageInfo> }
  */
 export function sendMail(mailOptions) {
+    if(process.env.EMAIL_MOCK === 'true') {
+        console.log(`MOCK sending mail: ${mailOptions}`);
+        return Promise.resolve({});
+    }
     return transporter.sendMail(mailOptions);
 }
 

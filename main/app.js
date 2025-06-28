@@ -64,4 +64,5 @@ app.use(errorController.get404);
 
 connect(MONGODB_URI)
     .then(() => app.listen(3000))
+    .then(() => console.log('App listening on port 3000'))
     .catch(err => console.error(err));

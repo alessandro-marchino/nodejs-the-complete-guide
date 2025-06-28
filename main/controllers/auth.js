@@ -12,14 +12,13 @@ export function postLogin(req, res) {
     const { email, password } = req.body;
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-        return res.status(422).render('auth/login', { pageTitle: 'Login', path: '/login', errorMessage: errors.array()[0].msg });
+        return res.status(422).render('auth/login', { pageTitle: 'Login', path: '/login', errorMessage: errors.array()[0].msg, validationErrors: errors.mapped() });
     }
     User.findOne({ email })
         .then(user => compare(password, user.password)
             .then(doMatch => {
                 if(!doMatch) {
-                    req.flash('error', 'Invalid email or password');
-                    return res.redirect('/login');
+                    return res.status(422).render('auth/login', { pageTitle: 'Login', path: '/login', errorMessage: 'Invalid email or password' });
                 }
                 req.session.user = user;
                 req.session.save((err) => {
