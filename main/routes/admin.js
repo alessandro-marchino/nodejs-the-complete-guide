@@ -24,7 +24,7 @@ router.post('/add-product', [
 router.get('/edit-product/:productId', adminController.getEditProduct);
 router.post('/edit-product', [
     body('title')
-        .isAlphanumeric()
+        .isString()
         .isLength({ min: 3 })
         .trim(),
     body('imageUrl')

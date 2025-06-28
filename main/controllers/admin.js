@@ -38,13 +38,14 @@ export function getEditProduct(req, res) {
 }
 
 export function postEditProduct(req, res) {
-    const errors = validationResult(req);
-    if(!errors.isEmpty()) {
-        return res.status(422).render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, errorMessage: errors.array()[0].msg, validationErrors: errors.mapped() });
-    }
 
     Product.findById(req.body.productId)
         .then(product => {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return res.status(422).render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product, errorMessage: errors.array()[0].msg, validationErrors: errors.mapped() });
+            }
+
             if(!product.userId._id.equals(req.user._id)) {
                 return res.redirect('/');
             }
