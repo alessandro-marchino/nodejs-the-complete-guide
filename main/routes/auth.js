@@ -14,10 +14,11 @@ router.post('/login', [
                     throw new Error('Invalid email or password.');
                 }
             })
-        ),
+        ).normalizeEmail(),
     body('password', 'Please enter a password with only numbers and text and at least 5 characters long.')
         .isLength({ min: 5 })
-        .isAlphanumeric(),
+        .isAlphanumeric()
+        .trim(),
 ], authController.postLogin);
 router.post('/logout', authController.postLogout);
 
@@ -31,10 +32,12 @@ router.post('/signup', [
                     throw new Error('Email exists already. Please pick a different one.');
                 }
             })
-        ),
+        )
+        .normalizeEmail(),
     body('password', 'Please enter a password with only numbers and text and at least 5 characters long.')
         .isLength({ min: 5 })
-        .isAlphanumeric(),
+        .isAlphanumeric()
+        .trim(),
     body('confirmPassword')
         .custom((value, { req }) => {
             if(value !== req.body.password) {
