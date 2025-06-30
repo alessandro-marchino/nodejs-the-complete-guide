@@ -34,26 +34,26 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(join(import.meta.dirname, 'public')));
 app.use(Session({ secret: 'my secret', resave: false, saveUninitialized: false, store }));
 app.use(csrfSynchronisedProtection, (req, res, next) => {
-    res.locals.csrfToken = req.csrfToken();
-    next();
+  res.locals.csrfToken = req.csrfToken();
+  next();
 })
 app.use(flash());
 app.use((req, res, next) => {
-    res.locals.errorMessage = req.flash('error')[0];
-    next();
+  res.locals.errorMessage = req.flash('error')[0];
+  next();
 })
 app.use((req, res, next) => {
-    res.locals.oldInput = req.body;
-    res.locals.validationErrors = [];;
-    res.locals.isAuthenticated = !!req.session?.user;
-    if(req.session?.user) {
-        return req.user = User.findOne(req.session.user._id)
-            .then(user => {
-                req.user = user;
-                next();
-            });
-    }
-    next();
+  res.locals.oldInput = req.body;
+  res.locals.validationErrors = [];;
+  res.locals.isAuthenticated = !!req.session?.user;
+  if(req.session?.user) {
+    return req.user = User.findOne(req.session.user._id)
+      .then(user => {
+        req.user = user;
+        next();
+      });
+  }
+  next();
 });
 
 app.use('/admin', adminRoutes);
@@ -63,6 +63,6 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 connect(MONGODB_URI)
-    .then(() => app.listen(3000))
-    .then(() => console.log('App listening on port 3000'))
-    .catch(err => console.error(err));
+  .then(() => app.listen(3000))
+  .then(() => console.log('App listening on port 3000'))
+  .catch(err => console.error(err));

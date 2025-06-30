@@ -9,31 +9,31 @@ router.use(isAuth);
 
 router.get('/add-product', adminController.getAddProduct);
 router.post('/add-product', [
-    body('title')
-        .isString()
-        .isLength({ min: 3 })
-        .trim(),
-    body('imageUrl')
-        .isURL(),
-    body('price')
-        .isFloat(),
-    body('description')
-        .isLength({ min: 5, max: 400 })
-        .trim()
+  body('title')
+    .isString()
+    .isLength({ min: 3 })
+    .trim(),
+  body('imageUrl')
+    .isURL(),
+  body('price')
+    .isFloat(),
+  body('description')
+    .isLength({ min: 5, max: 400 })
+    .trim()
 ], adminController.postAddProduct);
 router.get('/edit-product/:productId', adminController.getEditProduct);
 router.post('/edit-product', [
-    body('title')
-        .isString()
-        .isLength({ min: 3 })
-        .trim(),
-    body('imageUrl')
-        .isURL(),
-    body('price')
-        .isFloat(),
-    body('description')
-        .isLength({ min: 5, max: 400 })
-        .trim()
+  body('title')
+    .isString()
+    .isLength({ min: 3 })
+    .trim(),
+  body('imageUrl')
+    .isURL(),
+  body('price')
+    .isFloat(),
+  body('description')
+    .isLength({ min: 5, max: 400 })
+    .trim()
 ], adminController.postEditProduct);
 router.post('/delete-product', adminController.postDeleteProduct);
 router.get('/products', adminController.getProducts);

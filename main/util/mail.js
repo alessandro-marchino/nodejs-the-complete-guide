@@ -5,12 +5,12 @@ import { createTransport } from 'nodemailer';
  */
 
 const transporter = createTransport({
-    host: process.env.EMAIL_HOST,
-    port: +process.env.EMAIL_PORT,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    }
+  host: process.env.EMAIL_HOST,
+  port: +process.env.EMAIL_PORT,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  }
 });
 
 /**
@@ -18,10 +18,10 @@ const transporter = createTransport({
  * @returns { Promise<SentMessageInfo> }
  */
 export function sendMail(mailOptions) {
-    if(process.env.EMAIL_MOCK === 'true') {
-        console.log(`MOCK sending mail: ${mailOptions}`);
-        return Promise.resolve({});
-    }
-    return transporter.sendMail(mailOptions);
+  if(process.env.EMAIL_MOCK === 'true') {
+    console.log(`MOCK sending mail: ${mailOptions}`);
+    return Promise.resolve({});
+  }
+  return transporter.sendMail(mailOptions);
 }
 
