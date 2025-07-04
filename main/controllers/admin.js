@@ -19,7 +19,7 @@ export function postAddProduct(req, res) {
   });
   product.save()
     .then(() => res.redirect('/admin/products'))
-    .catch(e => console.log(e));
+    .catch(e => res.redirect('/500'));
 }
 
 export function getEditProduct(req, res) {
