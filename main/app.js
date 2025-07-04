@@ -49,8 +49,14 @@ app.use((req, res, next) => {
   if(req.session?.user) {
     return req.user = User.findOne(req.session.user._id)
       .then(user => {
+        if(!user) {
+          return next();
+        }
         req.user = user;
         next();
+      })
+      .catch(err => {
+        throw new Error(err)
       });
   }
   next();
