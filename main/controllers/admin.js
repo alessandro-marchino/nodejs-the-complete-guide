@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator';
 import Product from "../model/product.js";
+import { defaultHandleError } from '../util/error.js';
 
 export function getAddProduct(req, res) {
   res.render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', editing: false });
@@ -19,11 +20,7 @@ export function postAddProduct(req, res, next) {
   });
   product.save()
     .then(() => res.redirect('/admin/products'))
-    .catch(e => {
-      const err = new Error(e);
-      err.httpStatusCode = 500;
-      return next(err);
-    });
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function getEditProduct(req, res) {
@@ -38,11 +35,7 @@ export function getEditProduct(req, res) {
       }
       res.render('admin/edit-product', { pageTitle: 'Edit Product', path: '/admin/edit-product', editing: true, product: product })
     })
-    .catch(e => {
-      const err = new Error(e);
-      err.httpStatusCode = 500;
-      return next(err);
-    });
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function postEditProduct(req, res) {
@@ -62,11 +55,7 @@ export function postEditProduct(req, res) {
       return product.save()
         .then(() => res.redirect('/admin/products'));
     })
-    .catch(e => {
-      const err = new Error(e);
-      err.httpStatusCode = 500;
-      return next(err);
-    });
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function getProducts(req, res) {
@@ -74,19 +63,11 @@ export function getProducts(req, res) {
     .then(rows => {
       res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
     })
-    .catch(e => {
-      const err = new Error(e);
-      err.httpStatusCode = 500;
-      return next(err);
-    });
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function postDeleteProduct(req, res) {
   Product.deleteOne({ _id: req.body.productId, userId: req.user._id })
     .then(() => res.redirect('/admin/products'))
-    .catch(e => {
-      const err = new Error(e);
-      err.httpStatusCode = 500;
-      return next(err);
-    });
+    .catch(e => defaultHandleError(e, next));
 }

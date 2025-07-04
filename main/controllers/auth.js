@@ -3,6 +3,7 @@ import { hash, compare } from 'bcryptjs';
 import { sendMail } from '../util/mail.js';
 import { randomBytes } from 'crypto';
 import { validationResult } from 'express-validator';
+import { defaultHandleError } from '../util/error.js';
 
 export function getLogin(req, res) {
   return res.render('auth/login', { pageTitle: 'Login', path: '/login' });
@@ -30,7 +31,7 @@ export function postLogin(req, res) {
         res.redirect('/');
       });
     })
-    .catch(e => console.error(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function postLogout(req, res) {
@@ -62,7 +63,7 @@ export function postSignup (req, res, next) {
         html: '<h1>You have successfully signed up!</h1>'
       })
     })
-    .catch(e => console.error(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function getReset(req, res) {
@@ -98,7 +99,7 @@ export function postReset(req, res) {
           `
         })
       })
-      .catch(e => console.log(e))
+      .catch(e => defaultHandleError(e, next));
     });
 }
 
@@ -110,7 +111,7 @@ export function getNewPassword(req, res) {
       }
       return res.render('auth/new-password', { pageTitle: 'New Password', path: '/new-password', userId: user._id.toString(), token: req.params.token });
     })
-    .catch(e => console.log(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function postNewPassword(req, res) {
@@ -129,5 +130,5 @@ export function postNewPassword(req, res) {
         })
         .then(() => res.redirect('/login'));
     })
-    .catch(e => console.log(e));
+    .catch(e => defaultHandleError(e, next));
 }

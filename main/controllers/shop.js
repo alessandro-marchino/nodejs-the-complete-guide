@@ -1,12 +1,13 @@
 import Product from '../model/product.js';
 import Order from '../model/order.js';
+import { defaultHandleError } from '../util/error.js';
 
 export function getProducts(req, res) {
   Product.find()
     .then(rows => {
       res.render('shop/product-list', { prods: rows, pageTitle: 'All products', path: '/products' })
     })
-    .catch(e => console.log(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function getProductDetail(req, res) {
@@ -18,7 +19,7 @@ export function getProductDetail(req, res) {
       }
       res.render('shop/product-detail', { product, pageTitle: product.title, path: '/products' })
     })
-    .catch(e => console.log(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function getIndex(req, res) {
@@ -26,21 +27,21 @@ export function getIndex(req, res) {
     .then(rows => {
       res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/' })
     })
-    .catch(e => console.log(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function getCart(req, res) {
   req.user
     .populate('cart.items.productId')
     .then(user => res.render('shop/cart', { pageTitle: 'Your cart', path: '/cart', products: user.cart.items }))
-    .catch(e => console.error(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function postCart(req, res) {
   Product.findById(req.body.productId)
     .then(product => req.user.addToCart(product))
     .then(() => res.redirect('/cart'))
-    .catch(e => console.error(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function postCartDeleteProduct(req, res) {
@@ -48,13 +49,13 @@ export function postCartDeleteProduct(req, res) {
   req.user
     .deleteItemFromCart(prodId)
     .then(() => res.redirect('/cart'))
-    .catch(e => console.error(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function getOrders(req, res) {
   Order.find({ 'user.userId': req.user._id })
     .then(orders => res.render('shop/orders', { pageTitle: 'Your orders', path: '/orders', orders }))
-    .catch(e => console.error(e))
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function postOrder(req, res) {
@@ -76,7 +77,7 @@ export function postOrder(req, res) {
     })
     .then(() => req.user.clearCart())
     .then(() => res.redirect('/orders'))
-    .catch(e => console.log(e));
+    .catch(e => defaultHandleError(e, next));
 }
 
 export function getCheckout(req, res) {
