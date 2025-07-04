@@ -55,9 +55,7 @@ app.use((req, res, next) => {
         req.user = user;
         next();
       })
-      .catch(err => {
-        throw new Error(err)
-      });
+      .catch(err => next(new Error(err)));
   }
   next();
 });
@@ -68,9 +66,7 @@ app.use(authRoutes);
 
 app.get('/500', errorController.get500);
 app.use(errorController.get404);
-app.use((err, req, res, next) => {
-  res.redirect('/500');
-})
+app.use((err, req, res, next) => errorController.get500(req, res))
 
 connect(MONGODB_URI)
   .then(() => app.listen(3000))
