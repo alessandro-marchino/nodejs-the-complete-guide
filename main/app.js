@@ -79,7 +79,6 @@ app.get('/500', errorController.get500);
 app.use(errorController.get404);
 app.use((err, req, res, next) => {
   res.locals.isAuthenticated = false;
-  console.log(err, req, res)
   errorController.get500(req, res)
 })
 

@@ -1,6 +1,8 @@
 import Product from '../model/product.js';
 import Order from '../model/order.js';
 import { defaultHandleError } from '../util/error.js';
+import { readFile } from 'fs';
+import { join } from 'path';
 
 export function getProducts(req, res) {
   Product.find()
@@ -82,4 +84,16 @@ export function postOrder(req, res) {
 
 export function getCheckout(req, res) {
   res.render('shop/checkout', { pageTitle: 'Checkout', path: '/checkout' });
+}
+
+export function getInvoice(req, res, next) {
+  const orderId = req.params.orderId;
+  const invoiceId = `invoice-${orderId}.pdf`;
+  readFile(join(import.meta.dirname, '..', 'data', 'invoices', invoiceId), (err, data) => {
+    if(err) {
+      console.log(err, join(import.meta.dirname, '..', 'data', 'invoices', invoiceId));
+      return next(err);
+    }
+    res.send(data);
+  });
 }

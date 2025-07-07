@@ -179,6 +179,7 @@ dist
 **/output/*
 !**/output/DND
 
+**/data/**/*
 **/data/*
 !**/data/DND
 
