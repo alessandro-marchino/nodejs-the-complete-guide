@@ -92,15 +92,25 @@ export function getCheckout(req, res) {
  */
 export function getInvoice(req, res, next) {
   const orderId = req.params.orderId;
-  const invoiceId = `invoice-${orderId}.pdf`;
-  readFile(join(import.meta.dirname, '..', 'data', 'invoices', invoiceId), (err, data) => {
-    if(err) {
-      console.log(err, join(import.meta.dirname, '..', 'data', 'invoices', invoiceId));
-      return next(err);
-    }
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${invoiceId}"`)
-    // res.send(data);
-    res.send('wawa');
-  });
+  Order.findById(orderId)
+    .then(order => {
+      if(!order) {
+        return next(new Error('No order found.'))
+      }
+      if(!order.user.userId.equals(req.user._id)) {
+        return next(new Error('Unauthorized.'))
+      }
+      const invoiceId = `invoice-${orderId}.pdf`;
+      readFile(join(import.meta.dirname, '..', 'data', 'invoices', invoiceId), (err, data) => {
+        if(err) {
+          console.log(err, join(import.meta.dirname, '..', 'data', 'invoices', invoiceId));
+          return next(err);
+        }
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${invoiceId}"`)
+        // res.send(data);
+        res.send('wawa');
+      });
+    })
+    .catch(err => next(err));
 }
