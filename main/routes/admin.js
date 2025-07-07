@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as adminController from '../controllers/admin.js';
 import isAuth from '../middleware/is-auth.js';
-import { body } from 'express-validator';
+import { body, check } from 'express-validator';
 
 const router = Router();
 
@@ -13,6 +13,13 @@ router.post('/add-product', [
     .isString()
     .isLength({ min: 3 })
     .trim(),
+  check('file')
+    .optional()
+    .custom((value, meta) => {
+      if(!meta.req.file) {
+        throw new Error('Attached file is not an image.');
+      }
+    }),
   body('price')
     .isFloat(),
   body('description')
@@ -25,8 +32,6 @@ router.post('/edit-product', [
     .isString()
     .isLength({ min: 3 })
     .trim(),
-  body('imageUrl')
-    .isURL(),
   body('price')
     .isFloat(),
   body('description')

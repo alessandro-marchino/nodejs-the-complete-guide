@@ -14,6 +14,17 @@
             ],
             "runtimeExecutable": "${workspaceFolder}/developer-experience/node_modules/.bin/nodemon",
             "program": "${workspaceFolder}/developer-experience/app.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch main",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/main",
+            "runtimeExecutable": "${workspaceFolder}/main/node_modules/.bin/nodemon",
+            "program": "${workspaceFolder}/main/app.js"
         }
     ]
 }

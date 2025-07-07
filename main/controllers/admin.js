@@ -11,15 +11,13 @@ export function postAddProduct(req, res, next) {
   if(!errors.isEmpty()) {
     return res.status(422).render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', editing: false, errorMessage: errors.array()[0].msg, validationErrors: errors.mapped() });
   }
-  console.log(req.body);
-  console.log(req.file);
-  return res.redirect('/admin/add-product');
+  const imageUrl = req.file.path;
 
   const product = new Product({
     title: req.body.title,
     price: req.body.price,
     description: req.body.description,
-    image: req.body.image,
+    imageUrl: imageUrl,
     userId: req.user
   });
   product.save()
@@ -43,6 +41,7 @@ export function getEditProduct(req, res) {
 }
 
 export function postEditProduct(req, res) {
+  const image = req.file;
   Product.findById(req.body.productId)
     .then(product => {
       const errors = validationResult(req);
@@ -55,7 +54,9 @@ export function postEditProduct(req, res) {
       product.title = req.body.title;
       product.price = req.body.price;
       product.description = req.body.description;
-      product.imageUrl = req.body.imageUrl;
+      if(image) {
+        product.imageUrl = image.path;
+      }
       return product.save()
         .then(() => res.redirect('/admin/products'));
     })

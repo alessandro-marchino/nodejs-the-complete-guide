@@ -32,7 +32,7 @@ const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'images'),
   filename: (req, file, cb) => cb(null, `${randomUUID()}-${file.originalname}`)
 });
-const fileFilter = (req, file, cb) => cb(file.mimetype === 'image/png'
+const fileFilter = (req, file, cb) => cb(null, file.mimetype === 'image/png'
   || file.mimetype === 'image/jpg'
   || file.mimetype === 'image/jpeg');
 
@@ -76,7 +76,11 @@ app.use(authRoutes);
 
 app.get('/500', errorController.get500);
 app.use(errorController.get404);
-app.use((err, req, res, next) => errorController.get500(req, res))
+app.use((err, req, res, next) => {
+  res.locals.isAuthenticated = false;
+  console.log(err, req, res)
+  errorController.get500(req, res)
+})
 
 connect(MONGODB_URI)
   .then(() => app.listen(3000))
