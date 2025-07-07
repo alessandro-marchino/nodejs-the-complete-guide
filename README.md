@@ -23,3 +23,7 @@ EMAIL_PORT=<the email port>
 EMAIL_USER=<the email username>
 EMAIL_PASS=<the email password>
 ```
+
+### Users
+
+- test@test.com - test1

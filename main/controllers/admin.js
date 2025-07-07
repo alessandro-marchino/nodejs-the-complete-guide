@@ -11,6 +11,10 @@ export function postAddProduct(req, res, next) {
   if(!errors.isEmpty()) {
     return res.status(422).render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', editing: false, errorMessage: errors.array()[0].msg, validationErrors: errors.mapped() });
   }
+  console.log(req.body);
+  console.log(req.file);
+  return res.redirect('/admin/add-product');
+
   const product = new Product({
     title: req.body.title,
     price: req.body.price,

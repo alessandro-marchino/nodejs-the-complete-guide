@@ -15,6 +15,7 @@ import authRoutes from './routes/auth.js';
 import * as errorController from './controllers/error.js';
 
 import User from './model/user.js';
+import multer from 'multer';
 
 const MONGODB_URI = 'mongodb://nodejscomplete:mypass@localhost:27017/nodejscomplete?authSource=nodejscomplete';
 
@@ -31,6 +32,7 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ dest: 'images' }).single('image'));
 app.use(express.static(join(import.meta.dirname, 'public')));
 app.use(Session({ secret: 'my secret', resave: false, saveUninitialized: false, store }));
 app.use(csrfSynchronisedProtection, (req, res, next) => {
