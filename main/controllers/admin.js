@@ -15,7 +15,7 @@ export function postAddProduct(req, res, next) {
     title: req.body.title,
     price: req.body.price,
     description: req.body.description,
-    imageUrl: req.body.imageUrl,
+    image: req.body.image,
     userId: req.user
   });
   product.save()
