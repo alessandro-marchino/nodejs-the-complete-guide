@@ -86,6 +86,10 @@ export function getCheckout(req, res) {
   res.render('shop/checkout', { pageTitle: 'Checkout', path: '/checkout' });
 }
 
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
 export function getInvoice(req, res, next) {
   const orderId = req.params.orderId;
   const invoiceId = `invoice-${orderId}.pdf`;
@@ -94,6 +98,9 @@ export function getInvoice(req, res, next) {
       console.log(err, join(import.meta.dirname, '..', 'data', 'invoices', invoiceId));
       return next(err);
     }
-    res.send(data);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${invoiceId}"`)
+    // res.send(data);
+    res.send('wawa');
   });
 }
