@@ -26,27 +26,7 @@
                     </article>
                 <% } %>
             </div>
-            <section class="pagination">
-                <% if (pagination.page > 2) { %>
-                    <a href="/?page=1">1</a>
-                <% } %>
-                <% if (pagination.previousPage > 2) { %>
-                    <a>...</a>
-                <% } %>
-                <% if (pagination.hasPreviousPage) { %>
-                    <a href="/?page=<%= pagination.previousPage %>"><%= pagination.previousPage %></a>
-                <% } %>
-                <a href="/?page=<%= pagination.page %>" class="active"><%= pagination.page %></a>
-                <% if (pagination.hasNextPage) { %>
-                    <a href="/?page=<%= pagination.nextPage %>"><%= pagination.nextPage %></a>
-                <% } %>
-                <% if (pagination.nextPage < pagination.lastPage - 1) { %>
-                    <a>...</a>
-                <% } %>
-                <% if (pagination.lastPage !== pagination.nextPage && pagination.lastPage !== pagination.page) { %>
-                    <a href="/?page=<%= pagination.lastPage %>"><%= pagination.lastPage %></a>
-                <% } %>
-            </section>
+            <%- include('../includes/pagination.ejs', { pagination }) %>
         <% } else { %>
             <h1>No Products Found!</h1>
         <% } %>

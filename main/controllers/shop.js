@@ -5,13 +5,26 @@ import PDFDocument from 'pdfkit';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
 import { validationResult } from 'express-validator';
+import { computePagination } from '../util/pagination.js';
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 2;
 
 export function getProducts(req, res) {
-  Product.find()
+  const page = +req.query.page || 1;
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.redirect('/');
+  }
+  let totalItems;
+  Product.countDocuments()
+    .then(numProducts => {
+      totalItems = numProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then(rows => {
-      res.render('shop/product-list', { prods: rows, pageTitle: 'All products', path: '/products' })
+      res.render('shop/product-list', { prods: rows, pageTitle: 'All products', path: '/products', pagination: computePagination(page, totalItems, ITEMS_PER_PAGE) })
     })
     .catch(e => defaultHandleError(e, next));
 }
@@ -43,14 +56,7 @@ export function getIndex(req, res, next) {
         .limit(ITEMS_PER_PAGE);
     })
     .then(rows => {
-      res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/', pagination: {
-        page,
-        nextPage: page + 1,
-        previousPage: page - 1,
-        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
-        hasPreviousPage: page > 1,
-        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
-      } })
+      res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/', pagination: computePagination(page, totalItems, ITEMS_PER_PAGE) })
     })
     .catch(e => defaultHandleError(e, next));
 }
