@@ -152,10 +152,18 @@ export function postOrder(req, res, next) {
 }
 
 /**
+ * @param {import('express').Request} req
  * @param {import('express').Response} res
  */
-export function getCheckout(_, res) {
-  res.render('shop/checkout', { pageTitle: 'Checkout', path: '/checkout' });
+export function getCheckout(req, res) {
+  req.user
+    .populate('cart.items.productId')
+    .then(user => res.render('shop/checkout', {
+      pageTitle: 'Checkout',
+      path: '/checkout',
+      products: user.cart.items,
+      totalPrice: user.cart.items.reduce((acc, item) => acc + item.quantity * item.productId.price, 0).toFixed(2)
+    }))
 }
 
 /**

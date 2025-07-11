@@ -101,7 +101,6 @@ export function getProducts(req, res, next) {
  * @param {import('express').Response} res
  */
 export function deleteProduct(req, res) {
-  console.log('here')
   Product.findById(req.params.productId)
     .then(product => {
       if(!product) {
