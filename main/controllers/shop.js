@@ -6,7 +6,7 @@ import { createWriteStream } from 'fs';
 import { join } from 'path';
 import { validationResult } from 'express-validator';
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 1;
 
 export function getProducts(req, res) {
   Product.find()
@@ -29,7 +29,7 @@ export function getProductDetail(req, res) {
 }
 
 export function getIndex(req, res, next) {
-  const page = +(req.query.page || '1');
+  const page = +req.query.page || 1;
   const errors = validationResult(req);
   if(!errors.isEmpty()) {
     return res.redirect('/');
@@ -44,8 +44,9 @@ export function getIndex(req, res, next) {
     })
     .then(rows => {
       res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/', pagination: {
-        totalItems,
         page,
+        nextPage: page + 1,
+        previousPage: page - 1,
         hasNextPage: ITEMS_PER_PAGE * page < totalItems,
         hasPreviousPage: page > 1,
         lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
