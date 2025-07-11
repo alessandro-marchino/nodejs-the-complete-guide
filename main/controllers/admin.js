@@ -1,6 +1,7 @@
 import { validationResult } from 'express-validator';
 import Product from "../model/product.js";
 import { defaultHandleError } from '../util/error.js';
+import { deleteFile } from '../util/file.js';
 
 export function getAddProduct(req, res) {
   res.render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', editing: false });
@@ -55,6 +56,7 @@ export function postEditProduct(req, res) {
       product.price = req.body.price;
       product.description = req.body.description;
       if(image) {
+        deleteFile(product.imageUrl);
         product.imageUrl = image.path;
       }
       return product.save()
@@ -72,7 +74,14 @@ export function getProducts(req, res) {
 }
 
 export function postDeleteProduct(req, res) {
-  Product.deleteOne({ _id: req.body.productId, userId: req.user._id })
+  Product.findById(req.body.productId)
+    .then(product => {
+      if(!product) {
+        return next(new Error('Product not found.'))
+      }
+      deleteFile(product.imageUrl);
+      return Product.deleteOne({ _id: req.body.productId, userId: req.user._id });
+    })
     .then(() => res.redirect('/admin/products'))
     .catch(e => defaultHandleError(e, next));
 }
