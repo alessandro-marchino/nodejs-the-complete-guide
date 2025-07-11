@@ -1,7 +1,7 @@
 import Product from '../model/product.js';
 import Order from '../model/order.js';
 import { defaultHandleError } from '../util/error.js';
-import { readFile } from 'fs';
+import { createReadStream, readFile } from 'fs';
 import { join } from 'path';
 
 export function getProducts(req, res) {
@@ -101,16 +101,11 @@ export function getInvoice(req, res, next) {
         return next(new Error('Unauthorized.'))
       }
       const invoiceId = `invoice-${orderId}.pdf`;
-      readFile(join(import.meta.dirname, '..', 'data', 'invoices', invoiceId), (err, data) => {
-        if(err) {
-          console.log(err, join(import.meta.dirname, '..', 'data', 'invoices', invoiceId));
-          return next(err);
-        }
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${invoiceId}"`)
-        // res.send(data);
-        res.send('wawa');
-      });
+      const invoicePath = join(import.meta.dirname, '..', 'data', 'invoices', invoiceId);
+      const fileStream = createReadStream(invoicePath);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${invoiceId}"`);
+      fileStream.pipe(res);
     })
     .catch(err => next(err));
 }
