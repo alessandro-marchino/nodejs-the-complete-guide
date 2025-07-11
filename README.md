@@ -22,6 +22,9 @@ EMAIL_HOST=<the email host>
 EMAIL_PORT=<the email port>
 EMAIL_USER=<the email username>
 EMAIL_PASS=<the email password>
+
+STRIPE_PUBLIC_KEY=<the Stripe public key>
+STRIPE_PRIVATE_KEY=<the Stripe private key>
 ```
 
 ### Users

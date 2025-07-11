@@ -6,8 +6,11 @@ import { createWriteStream } from 'fs';
 import { join } from 'path';
 import { validationResult } from 'express-validator';
 import { computePagination } from '../util/pagination.js';
+import stripeFn from 'stripe';
 
 const ITEMS_PER_PAGE = 2;
+/** @type {import('stripe').Stripe} */
+const stripe = stripeFn(process.env.STRIPE_PRIVATE_KEY);
 
 /**
  * @param {import('express').Request} req
@@ -129,7 +132,7 @@ export function getOrders(req, res, next) {
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
  */
-export function postOrder(req, res, next) {
+export function getCheckoutSuccess(req, res, next) {
   req.user
     .populate('cart.items.productId')
     .then(user => {
@@ -156,13 +159,38 @@ export function postOrder(req, res, next) {
  * @param {import('express').Response} res
  */
 export function getCheckout(req, res) {
+  let user;
   req.user
     .populate('cart.items.productId')
-    .then(user => res.render('shop/checkout', {
+    .then(userDb => {
+      user = userDb;
+      return stripe.checkout.sessions.create({
+        payment_method_types: [ 'card' ],
+        line_items: user.cart.items.map(p => ({
+          quantity: p.quantity,
+          price_data: {
+            unit_amount: p.productId.price * 100,
+            currency: 'usd',
+            product_data: {
+              name: p.productId.title,
+              description: p.productId.description
+            }
+          }
+        })),
+        mode: 'payment',
+        success_url: `${req.protocol}://${req.get('host')}/checkout/success`,
+        cancel_url: `${req.protocol}://${req.get('host')}/checkout/cancel`,
+      });
+    })
+    .then(session => res.render('shop/checkout', {
       pageTitle: 'Checkout',
       path: '/checkout',
       products: user.cart.items,
-      totalPrice: user.cart.items.reduce((acc, item) => acc + item.quantity * item.productId.price, 0).toFixed(2)
+      totalPrice: user.cart.items.reduce((acc, item) => acc + item.quantity * item.productId.price, 0).toFixed(2),
+      stripe: {
+        publicKey: process.env.STRIPE_PUBLIC_KEY,
+        sessionId: session.id
+      }
     }))
 }
 

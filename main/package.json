@@ -13,6 +13,7 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^22.14.1",
+    "@types/stripe": "^8.0.416",
     "nodemon": "^3.1.10"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
     "mysql2": "^3.14.1",
     "nodemailer": "^7.0.3",
     "pdfkit": "^0.17.1",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "stripe": "^18.3.0"
   }
 }

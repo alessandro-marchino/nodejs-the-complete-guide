@@ -1,5 +1,6 @@
 <%- include('../includes/head.ejs') %>
   <link rel="stylesheet" href="/css/cart.css">
+  <script src="https://js.stripe.com/basil/stripe.js"></script>
 </head>
 
 <body>
@@ -16,5 +17,13 @@
     <div class="centered">
       <h2>Total: <%= totalPrice %></h2>
     </div>
+    <div class="centered">
+      <button id="order-btn" class="btn" type="button">ORDER</button>
+    </div>
   </main>
+  <script>
+    const stripe = Stripe('<%= stripe.publicKey %>');
+    const sessionId = '<%= stripe.sessionId %>';
+  </script>
+  <script src="/js/checkout.js"></script>
 <%- include('../includes/end.ejs') %>
