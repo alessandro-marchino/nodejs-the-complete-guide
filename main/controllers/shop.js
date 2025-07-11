@@ -5,6 +5,8 @@ import PDFDocument from 'pdfkit';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
 
+const ITEMS_PER_PAGE = 2;
+
 export function getProducts(req, res) {
   Product.find()
     .then(rows => {
@@ -26,7 +28,10 @@ export function getProductDetail(req, res) {
 }
 
 export function getIndex(req, res) {
+  const page = +(req.query.page || '1');
   Product.find()
+    .skip((page - 1) * ITEMS_PER_PAGE)
+    .limit(ITEMS_PER_PAGE)
     .then(rows => {
       res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/' })
     })
