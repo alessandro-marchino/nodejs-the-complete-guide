@@ -4,6 +4,7 @@ import { defaultHandleError } from '../util/error.js';
 import PDFDocument from 'pdfkit';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
+import { validationResult } from 'express-validator';
 
 const ITEMS_PER_PAGE = 2;
 
@@ -27,13 +28,28 @@ export function getProductDetail(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function getIndex(req, res) {
+export function getIndex(req, res, next) {
   const page = +(req.query.page || '1');
-  Product.find()
-    .skip((page - 1) * ITEMS_PER_PAGE)
-    .limit(ITEMS_PER_PAGE)
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.redirect('/');
+  }
+  let totalItems;
+  Product.countDocuments()
+    .then(numProducts => {
+      totalItems = numProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then(rows => {
-      res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/' })
+      res.render('shop/index', { prods: rows, pageTitle: 'Shop', path: '/', pagination: {
+        totalItems,
+        page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+      } })
     })
     .catch(e => defaultHandleError(e, next));
 }
