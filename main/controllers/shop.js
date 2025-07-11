@@ -2,7 +2,7 @@ import Product from '../model/product.js';
 import Order from '../model/order.js';
 import { defaultHandleError } from '../util/error.js';
 import PDFDocument from 'pdfkit';
-import { createReadStream, createWriteStream, readFile } from 'fs';
+import { createWriteStream } from 'fs';
 import { join } from 'path';
 
 export function getProducts(req, res) {
@@ -109,7 +109,17 @@ export function getInvoice(req, res, next) {
       res.setHeader('Content-Disposition', `attachment; filename="${invoiceId}"`);
       pdfDoc.pipe(res);
 
-      pdfDoc.text('Hello world!');
+      pdfDoc.fontSize(26).text('Invoice', { underline: true });
+      pdfDoc.text('-----------------------');
+      pdfDoc.fontSize(14);
+      let totalPrice = 0;
+      order.products.forEach(prod => {
+        totalPrice += prod.productData.price * prod.quantity;
+        pdfDoc.text(`${prod.productData.title} - ${prod.quantity} x \$${prod.productData.price}`);
+      });
+      pdfDoc.text('-----------------------');
+      pdfDoc.fontSize(20).text(`Total price: \$${totalPrice}`)
+
       pdfDoc.end();
     })
     .catch(err => next(err));
