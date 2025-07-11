@@ -26,7 +26,7 @@ const store = new (MongoDbStore(Session))({
     collection: 'sessions'
 });
 const { csrfSynchronisedProtection } = csrfSync({
-    getTokenFromRequest: req => req.body._csrf
+    getTokenFromRequest: req => req.body?._csrf || req.headers?.['csrf-token']
 });
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'images'),

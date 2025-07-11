@@ -3,10 +3,18 @@ import Product from "../model/product.js";
 import { defaultHandleError } from '../util/error.js';
 import { deleteFile } from '../util/file.js';
 
-export function getAddProduct(req, res) {
+/**
+ * @param {import('express').Response} res
+ */
+export function getAddProduct(_, res) {
   res.render('admin/edit-product', { pageTitle: 'Add Product', path: '/admin/add-product', editing: false });
 }
 
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
 export function postAddProduct(req, res, next) {
   const errors = validationResult(req);
   if(!errors.isEmpty()) {
@@ -26,7 +34,12 @@ export function postAddProduct(req, res, next) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function getEditProduct(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function getEditProduct(req, res, next) {
   const editMode = req.query.edit;
   if(editMode !== 'true') {
     return res.redirect('/');
@@ -41,7 +54,12 @@ export function getEditProduct(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function postEditProduct(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function postEditProduct(req, res, next) {
   const image = req.file;
   Product.findById(req.body.productId)
     .then(product => {
@@ -65,7 +83,12 @@ export function postEditProduct(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function getProducts(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function getProducts(req, res, next) {
   Product.find({ userId: req.user._id })
     .then(rows => {
       res.render('admin/products', { prods: rows, pageTitle: 'Admin Products', path: '/admin/products' })
@@ -73,15 +96,20 @@ export function getProducts(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function postDeleteProduct(req, res) {
-  Product.findById(req.body.productId)
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
+export function deleteProduct(req, res) {
+  console.log('here')
+  Product.findById(req.params.productId)
     .then(product => {
       if(!product) {
-        return next(new Error('Product not found.'))
+        return res.status(404).json({ message: 'Product not found' });
       }
-      deleteFile(product.imageUrl);
-      return Product.deleteOne({ _id: req.body.productId, userId: req.user._id });
+      // deleteFile(product.imageUrl);
+      // return Product.deleteOne({ _id: req.body.productId, userId: req.user._id });
     })
-    .then(() => res.redirect('/admin/products'))
-    .catch(e => defaultHandleError(e, next));
+    .then(() => res.status(200).json({ message: 'Success!' }))
+    .catch(e => res.status(500).json({ message: 'Deleting product failed', error: e.message }));
 }

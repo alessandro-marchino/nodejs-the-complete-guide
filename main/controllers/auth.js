@@ -5,11 +5,19 @@ import { randomBytes } from 'crypto';
 import { validationResult } from 'express-validator';
 import { defaultHandleError } from '../util/error.js';
 
-export function getLogin(req, res) {
+/**
+ * @param {import('express').Response} res
+ */
+export function getLogin(_, res) {
   return res.render('auth/login', { pageTitle: 'Login', path: '/login' });
 }
 
-export function postLogin(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function postLogin(req, res, next) {
   const { email, password } = req.body;
   const errors = validationResult(req);
   if(!errors.isEmpty()) {
@@ -34,14 +42,26 @@ export function postLogin(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
 export function postLogout(req, res) {
   req.session.destroy(() => res.redirect('/'));
 }
 
-export function getSignup(req, res) {
+/**
+ * @param {import('express').Response} res
+ */
+export function getSignup(_, res) {
   return res.render('auth/signup', { pageTitle: 'Signup', path: '/signup' });
 }
 
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
 export function postSignup (req, res, next) {
   const { email, password } = req.body;
   const errors = validationResult(req);
@@ -66,11 +86,19 @@ export function postSignup (req, res, next) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function getReset(req, res) {
+/**
+ * @param {import('express').Response} res
+ */
+export function getReset(_, res) {
   return res.render('auth/reset', { pageTitle: 'Reset Password', path: '/reset' });
 }
 
-export function postReset(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function postReset(req, res, next) {
   randomBytes(32, (err, buffer) => {
     if(err) {
       console.log(err);
@@ -103,7 +131,12 @@ export function postReset(req, res) {
     });
 }
 
-export function getNewPassword(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function getNewPassword(req, res, next) {
   User.findOne({ resetToken: req.params.token, resetTokenExpiration: { $gt: Date.now() } })
     .then(user => {
       if(!user) {
@@ -114,6 +147,10 @@ export function getNewPassword(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
 export function postNewPassword(req, res) {
   const { userId, password, token } = req.body;
   User.findOne({ _id: userId, resetToken: token, resetTokenExpiration: { $gt: Date.now() } })

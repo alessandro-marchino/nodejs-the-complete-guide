@@ -9,7 +9,12 @@ import { computePagination } from '../util/pagination.js';
 
 const ITEMS_PER_PAGE = 2;
 
-export function getProducts(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function getProducts(req, res, next) {
   const page = +req.query.page || 1;
   const errors = validationResult(req);
   if(!errors.isEmpty()) {
@@ -29,7 +34,12 @@ export function getProducts(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function getProductDetail(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function getProductDetail(req, res, next) {
   const prodId = req.params.productId;
   Product.findById(prodId)
     .then(product => {
@@ -41,6 +51,11 @@ export function getProductDetail(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
 export function getIndex(req, res, next) {
   const page = +req.query.page || 1;
   const errors = validationResult(req);
@@ -61,21 +76,36 @@ export function getIndex(req, res, next) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function getCart(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function getCart(req, res, next) {
   req.user
     .populate('cart.items.productId')
     .then(user => res.render('shop/cart', { pageTitle: 'Your cart', path: '/cart', products: user.cart.items }))
     .catch(e => defaultHandleError(e, next));
 }
 
-export function postCart(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function postCart(req, res, next) {
   Product.findById(req.body.productId)
     .then(product => req.user.addToCart(product))
     .then(() => res.redirect('/cart'))
     .catch(e => defaultHandleError(e, next));
 }
 
-export function postCartDeleteProduct(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function postCartDeleteProduct(req, res, next) {
   const prodId = req.body.productId;
   req.user
     .deleteItemFromCart(prodId)
@@ -83,13 +113,23 @@ export function postCartDeleteProduct(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function getOrders(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function getOrders(req, res, next) {
   Order.find({ 'user.userId': req.user._id })
     .then(orders => res.render('shop/orders', { pageTitle: 'Your orders', path: '/orders', orders }))
     .catch(e => defaultHandleError(e, next));
 }
 
-export function postOrder(req, res) {
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export function postOrder(req, res, next) {
   req.user
     .populate('cart.items.productId')
     .then(user => {
@@ -111,13 +151,17 @@ export function postOrder(req, res) {
     .catch(e => defaultHandleError(e, next));
 }
 
-export function getCheckout(req, res) {
+/**
+ * @param {import('express').Response} res
+ */
+export function getCheckout(_, res) {
   res.render('shop/checkout', { pageTitle: 'Checkout', path: '/checkout' });
 }
 
 /**
  * @param {import('express').Request} req
  * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
  */
 export function getInvoice(req, res, next) {
   const orderId = req.params.orderId;
