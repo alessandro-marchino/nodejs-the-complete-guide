@@ -8,6 +8,10 @@ const deleteProduct = (btn) => {
       'csrf-token': csrf
     }
   })
-  .then(res => console.log(res))
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+    btn.closest('article').remove();
+  })
   .catch(err => console.log(err));
 };

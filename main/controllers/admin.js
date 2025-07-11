@@ -107,8 +107,8 @@ export function deleteProduct(req, res) {
       if(!product) {
         return res.status(404).json({ message: 'Product not found' });
       }
-      // deleteFile(product.imageUrl);
-      // return Product.deleteOne({ _id: req.body.productId, userId: req.user._id });
+      deleteFile(product.imageUrl);
+      return Product.deleteOne({ _id: req.body.productId, userId: req.user._id });
     })
     .then(() => res.status(200).json({ message: 'Success!' }))
     .catch(e => res.status(500).json({ message: 'Deleting product failed', error: e.message }));
