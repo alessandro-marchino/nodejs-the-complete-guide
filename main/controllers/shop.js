@@ -1,7 +1,8 @@
 import Product from '../model/product.js';
 import Order from '../model/order.js';
 import { defaultHandleError } from '../util/error.js';
-import { createReadStream, readFile } from 'fs';
+import PDFDocument from 'pdfkit';
+import { createReadStream, createWriteStream, readFile } from 'fs';
 import { join } from 'path';
 
 export function getProducts(req, res) {
@@ -102,10 +103,14 @@ export function getInvoice(req, res, next) {
       }
       const invoiceId = `invoice-${orderId}.pdf`;
       const invoicePath = join(import.meta.dirname, '..', 'data', 'invoices', invoiceId);
-      const fileStream = createReadStream(invoicePath);
+      const pdfDoc = new PDFDocument();
+      pdfDoc.pipe(createWriteStream(invoicePath));
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${invoiceId}"`);
-      fileStream.pipe(res);
+      pdfDoc.pipe(res);
+
+      pdfDoc.text('Hello world!');
+      pdfDoc.end();
     })
     .catch(err => next(err));
 }
