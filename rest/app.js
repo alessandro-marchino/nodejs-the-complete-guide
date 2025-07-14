@@ -14,9 +14,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/feed', feedRouter);
-app.listen(8080);
-
-const fe = express();
-fe.use(express.static(join(import.meta.dirname, 'public')));
-fe.get('', (req, res, next) => res.send('<script src="index.js" defer></script><button id="get">Get Posts</button><button id="post">Create a Post</button>'));
-fe.listen(3000);
+app.listen(8080, () => {
+  console.log('App listening on port 8080')
+});
