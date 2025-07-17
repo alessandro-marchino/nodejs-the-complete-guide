@@ -2,10 +2,9 @@
   "name": "rest",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon app.ts"
   },
   "keywords": [],
   "author": "",
@@ -13,11 +12,16 @@
   "description": "",
   "dependencies": {
     "body-parser": "^2.2.0",
+    "dotenv": "^17.2.0",
     "express": "^5.1.0",
-    "express-validator": "^7.2.1"
+    "express-validator": "^7.2.1",
+    "mongoose": "^8.16.4"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.6",
+    "@types/express": "^5.0.3",
     "@types/node": "^24.0.13",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "tsx": "^4.20.3"
   }
 }

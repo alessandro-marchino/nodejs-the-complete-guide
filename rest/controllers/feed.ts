@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto';
+import { RequestHandler } from 'express';
 import { validationResult } from 'express-validator';
 
-/** @type {import('express').RequestHandler} */
-export const getPosts = (req, res, next) => {
+export const getPosts: RequestHandler = (req, res, next) => {
   res.status(200).json({
     posts: [
       { title: 'First Post', content: 'This is the first post!', imageUrl: 'images/duck.png', creator: { name: 'Maximilian' }, createdAt: new Date(), _id: randomUUID() }
@@ -10,8 +10,7 @@ export const getPosts = (req, res, next) => {
   })
 }
 
-/** @type {import('express').RequestHandler} */
-export const createPost = (req, res, next) => {
+export const createPost: RequestHandler = (req, res, next) => {
   const err = validationResult(req);
   if(!err.isEmpty()) {
     return res.status(422).json({ message: 'Validation failed, entered data is incorrect', errors: err.array() })

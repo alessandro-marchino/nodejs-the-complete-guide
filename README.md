@@ -11,6 +11,10 @@ To configure MongoDB, create a database by name `nodejscomplete`:
 use nodejscomplete
 db.createCollection('nodejscomplete')
 db.createUser({ "user": "nodejscomplete", "pwd": "mypass", "roles": [ { "role": "readWrite", "db": "nodejscomplete" } ] })
+
+use postapp
+db.createCollection('postapp')
+db.createUser({ "user": "postapp", "pwd": "mypass", "roles": [ { "role": "readWrite", "db": "postapp" } ] })
 ```
 
 ### Mail
