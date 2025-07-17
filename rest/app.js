@@ -1,7 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import feedRouter from './routes/feed.js';
-import { join } from 'path';
 
 const app = express();
 

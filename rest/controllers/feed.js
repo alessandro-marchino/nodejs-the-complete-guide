@@ -14,6 +14,6 @@ export const createPost = (req, res, next) => {
   const { title, content } = req.body;
   res.status(201).json({
     message: 'Post created successfully!',
-    post: { id: randomUUID(), title, content }
+    post: { _id: randomUUID(), title, content, creator: { name: 'Maximilian', createdAt: new Date() } }
   })
 }
