@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { validationResult } from 'express-validator';
 
 /** @type {import('express').RequestHandler} */
 export const getPosts = (req, res, next) => {
@@ -11,6 +12,10 @@ export const getPosts = (req, res, next) => {
 
 /** @type {import('express').RequestHandler} */
 export const createPost = (req, res, next) => {
+  const err = validationResult(req);
+  if(!err.isEmpty()) {
+    return res.status(422).json({ message: 'Validation failed, entered data is incorrect', errors: err.array() })
+  }
   const { title, content } = req.body;
   res.status(201).json({
     message: 'Post created successfully!',
