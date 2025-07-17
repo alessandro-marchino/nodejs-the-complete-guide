@@ -6,18 +6,14 @@ import { ErrorWithStatus } from '../models/error-with-status';
 
 export const getPosts: RequestHandler = (req, res, next) => {
   Post.find()
-    .then(posts => res.status(200).json({ posts }));
-  // res.status(200).json({
-  //   posts: [
-  //     { title: 'First Post', content: 'This is the first post!', imageUrl: 'images/duck.png', creator: { name: 'Maximilian' }, createdAt: new Date(), _id: randomUUID() }
-  //   ]
-  // })
+    .then(posts => res.status(200).json({ message: 'Fetched posts successfully.', posts }))
+    .catch(err => next(err));
 }
 
 export const createPost: RequestHandler = (req, res, next) => {
   const err = validationResult(req);
   if(!err.isEmpty()) {
-    const error: ErrorWithStatus = new Error('Validation failed, entered data is incorrect');
+    const error: ErrorWithStatus = new Error('Validation failed, entered data is incorrect.');
     error.statusCode = 422;
     error.payload = err.array();
     throw error;
@@ -30,5 +26,19 @@ export const createPost: RequestHandler = (req, res, next) => {
   })
     .save()
     .then(post => res.status(201).json({ message: 'Post created successfully!', post }))
+    .catch(err => next(err));
+}
+
+export const getPost: RequestHandler = (req, res, next) => {
+  const postId = req.params.postId;
+  Post.findById(postId)
+    .then(post => {
+      if(!post) {
+        const error: ErrorWithStatus = new Error('Could not find post.');
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({ message: 'Post fetched.', post });
+    })
     .catch(err => next(err));
 }
