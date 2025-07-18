@@ -18,10 +18,15 @@ export const createPost: RequestHandler = (req, res, next) => {
     error.payload = err.array();
     throw error;
   }
+  if(!req.file) {
+    const error: ErrorWithStatus = new Error('No file provided.');
+    error.statusCode = 422;
+    throw error;
+  }
   new Post({
     title: req.body.title,
     content: req.body.content,
-    imageUrl: 'images/duck.png',
+    imageUrl: req.file.path,
     creator: { name: 'Maximilian' }
   })
     .save()
