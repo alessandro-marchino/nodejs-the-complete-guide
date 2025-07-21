@@ -133,7 +133,12 @@ export const deletePost: RequestHandler = (req, res, next) => {
       clearImage(post.imageUrl);
       return post.deleteOne();
     })
-    .then(post => res.status(200).json({ message: 'Post deleted successfully!', post }))
+    .then(() => User.findById(res.locals.userId))
+    .then(user => {
+      user!.posts = user!.posts.filter(p => !p._id.equals(postId));
+      return user!.save();
+    })
+    .then(() => res.status(200).json({ message: 'Post deleted successfully!' }))
     .catch(err => next(err));
 }
 
