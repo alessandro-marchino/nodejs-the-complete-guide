@@ -55,7 +55,12 @@ app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) 
 connect(MONGODB_URI)
   .then(() => {
     const server = app.listen(8080);
-    const io = new Server(server);
+    const io = new Server(server, {
+      cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+      }
+    });
 
     io.on('connection', socket => {
       console.log('Client connected');
