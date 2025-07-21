@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import { RequestHandler } from 'express';
 import { validationResult } from 'express-validator';
 import { Post } from '../models/post';
@@ -7,8 +6,17 @@ import { join } from 'path';
 import { unlink } from 'fs';
 
 export const getPosts: RequestHandler = (req, res, next) => {
-  Post.find()
-    .then(posts => res.status(200).json({ message: 'Fetched posts successfully.', posts }))
+  const currentPage = +(req.query.page || 1);
+  const perPage = 2;
+  let totalItems: number;
+  Post.countDocuments()
+    .then(count => {
+      totalItems = count;
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage)
+    })
+    .then(posts => res.status(200).json({ message: 'Fetched posts successfully.', posts, totalItems }))
     .catch(err => next(err));
 }
 
