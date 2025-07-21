@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { Document, model, Schema, Types } from 'mongoose';
 
 const postSchema = new Schema({
   title: {
@@ -20,3 +20,10 @@ const postSchema = new Schema({
 }, { timestamps: true });
 
 export const Post = model('Post', postSchema);
+export type PostType = Document<unknown, {}, { title: string; imageUrl: string; content: string; creator: any; }, {}> & {
+  _id: Types.ObjectId;
+  title: string;
+  imageUrl: string;
+  content: string;
+  creator: any;
+};

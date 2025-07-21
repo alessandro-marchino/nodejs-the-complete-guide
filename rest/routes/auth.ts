@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { putSignup } from '../controllers/auth';
+import { postLogin, putSignup } from '../controllers/auth';
 import { body } from 'express-validator';
 import { User } from '../models/user';
 
@@ -20,5 +20,7 @@ router.put('/signup', [
     body('password').trim().isLength({ min: 5 }),
     body('name').trim().notEmpty()
 ], putSignup);
+
+router.post('/login', postLogin);
 
 export default router;

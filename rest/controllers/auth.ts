@@ -3,7 +3,8 @@ import { validationResult } from 'express-validator';
 import { User, UserType } from '../models/user';
 import { type ErrorWithStatus } from '../models/error-with-status';
 import { compare, hash } from 'bcryptjs';
-import { Document, Types } from 'mongoose';
+import { sign } from 'jsonwebtoken';
+import { env } from 'process';
 
 export const putSignup: RequestHandler = (req, res, next) => {
   const err = validationResult(req);
@@ -28,6 +29,7 @@ export const postLogin: RequestHandler = (req, res, next) => {
         error.statusCode = 401;
         throw error;
       }
+      user.email;
       loadedUser = user;
       return compare(req.body.password, user.password);
     })
@@ -38,6 +40,12 @@ export const postLogin: RequestHandler = (req, res, next) => {
         throw error;
       }
       // Correct password
+      const token = sign(
+        { email: loadedUser.email, userId: loadedUser._id.toString() },
+        env.JWT_PRIVATE_KEY!,
+        { expiresIn: '1h' }
+      );
+      return res.status(200).json({ token, userId: loadedUser._id.toString() });
     })
     .catch(err => next(err));
 }

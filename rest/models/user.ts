@@ -1,4 +1,4 @@
-import { Document, model, Schema, Types } from 'mongoose';
+import { Document, model, ObjectId, Schema, Types } from 'mongoose';
 
 const userSchema = new Schema({
   email: {
@@ -24,4 +24,11 @@ const userSchema = new Schema({
 });
 
 export const User = model('User', userSchema);
-export type UserType = Document<unknown, {}, { password: string; email: string; name: string; status: string; post: Types.ObjectId[]; }, {}>;
+export type UserType = Document<unknown, {}, { password: string; email: string; name: string; status: string; post: Types.ObjectId[]; }, {}> & {
+  _id: Types.ObjectId;
+  password: string;
+  email: string;
+  name: string;
+  status: string;
+  post: Types.ObjectId[];
+};
