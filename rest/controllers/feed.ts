@@ -5,6 +5,7 @@ import { ErrorWithStatus } from '../models/error-with-status';
 import { join } from 'path';
 import { unlink } from 'fs';
 import { User } from '../models/user';
+import { getIO } from '../util/socket';
 
 export const getPosts: RequestHandler = async (req, res, next) => {
   const currentPage = +(req.query.page || 1);
@@ -44,6 +45,7 @@ export const createPost: RequestHandler = async (req, res, next) => {
     const creator = await User.findById(res.locals.userId);
     creator!.posts.push(post._id);
     await creator!.save();
+    getIO().emit('posts', { action: 'create', post });
     return res.status(201).json({ message: 'Post created successfully!', post, creator });
   } catch(err) {
     next(err);
