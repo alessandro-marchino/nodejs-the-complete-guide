@@ -44,7 +44,6 @@ app.use('/feed', feedRouter);
 app.use('/auth', authRouter);
 
 app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) => {
-  console.log('wawa', err);
   const statusCode = err.statusCode ?? 500;
   const message = err.message;
   res.status(statusCode).json({ message, payload: err.payload });
