@@ -3,6 +3,8 @@ import { RequestHandler } from 'express';
 import { validationResult } from 'express-validator';
 import { Post } from '../models/post';
 import { ErrorWithStatus } from '../models/error-with-status';
+import { join } from 'path';
+import { unlink } from 'fs';
 
 export const getPosts: RequestHandler = (req, res, next) => {
   Post.find()
@@ -46,4 +48,50 @@ export const getPost: RequestHandler = (req, res, next) => {
       res.status(200).json({ message: 'Post fetched.', post });
     })
     .catch(err => next(err));
+}
+
+export const updatePost: RequestHandler = (req, res, next) => {
+  const err = validationResult(req);
+  if(!err.isEmpty()) {
+    const error: ErrorWithStatus = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    error.payload = err.array();
+    throw error;
+  }
+  let imageUrl = req.body.image;
+  if(req.file) {
+    imageUrl = req.file.path;
+  }
+  if(!imageUrl) {
+    const error: ErrorWithStatus = new Error('No file provided.');
+    error.statusCode = 422;
+    throw error;
+  }
+  const postId = req.params.postId;
+  Post.findById(postId)
+    .then(post => {
+      if(!post) {
+        const error: ErrorWithStatus = new Error('Could not find post.');
+        error.statusCode = 404;
+        throw error;
+      }
+      if(imageUrl !== post.imageUrl) {
+        clearImage(post.imageUrl);
+      }
+      post.title = req.body.title;
+      post.content = req.body.content;
+      post.imageUrl = imageUrl;
+      return post.save()
+    })
+    .then(post => res.status(200).json({ message: 'Post updated successfully!', post }))
+    .catch(err => next(err));
+}
+
+function clearImage(filePath: string): void {
+  const completeFilePath = join(__dirname, '..', filePath);
+  unlink(completeFilePath, err => {
+    if(err) {
+      console.log(err)
+    }
+  });
 }
