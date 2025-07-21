@@ -10,6 +10,7 @@ import authRouter from './routes/auth';
 
 import { ErrorWithStatus } from './models/error-with-status';
 import { randomUUID } from 'crypto';
+import { isAuth } from './middleware/isAuth';
 
 const MONGODB_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PWD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DBNAME}?authSource=${process.env.MONGODB_AUTH_SOURCE}`;
 
@@ -40,7 +41,7 @@ app.use((_, res, next) => {
   next();
 });
 
-app.use('/feed', feedRouter);
+app.use('/feed', isAuth, feedRouter);
 app.use('/auth', authRouter);
 
 app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) => {

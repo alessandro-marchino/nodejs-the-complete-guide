@@ -1,11 +1,10 @@
 import { Router } from 'express';
 import { createPost, deletePost, getPost, getPosts, updatePost } from '../controllers/feed.js';
 import { body } from 'express-validator';
-import { isAuth } from '../middleware/isAuth.js';
 
 const router = Router();
 
-router.get('/posts', isAuth, getPosts);
+router.get('/posts', getPosts);
 router.post('/posts', [
   body('title')
     .trim()
