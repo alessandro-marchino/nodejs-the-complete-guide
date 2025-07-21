@@ -12,8 +12,9 @@ export const getPosts: RequestHandler = async (req, res, next) => {
   try {
     const totalItems = await Post.countDocuments();
     const posts = await Post.find()
-        .skip((currentPage - 1) * perPage)
-        .limit(perPage);
+      .populate('creator')
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     return res.status(200).json({ message: 'Fetched posts successfully.', posts, totalItems })
   } catch(err) {
     next(err);
