@@ -45,8 +45,9 @@ export const createPost: RequestHandler = async (req, res, next) => {
     const creator = await User.findById(res.locals.userId);
     creator!.posts.push(post._id);
     await creator!.save();
+    await post.populate('creator')
     getIO().emit('posts', { action: 'create', post });
-    return res.status(201).json({ message: 'Post created successfully!', post, creator });
+    return res.status(201).json({ message: 'Post created successfully!', post });
   } catch(err) {
     next(err);
   }
