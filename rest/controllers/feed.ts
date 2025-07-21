@@ -6,6 +6,7 @@ import { join } from 'path';
 import { unlink } from 'fs';
 
 export const getPosts: RequestHandler = (req, res, next) => {
+  console.log(res.locals)
   const currentPage = +(req.query.page || 1);
   const perPage = 2;
   let totalItems: number;
