@@ -12,6 +12,8 @@ import { ErrorWithStatus } from './models/error-with-status';
 import { randomUUID } from 'crypto';
 import { isAuth } from './middleware/isAuth';
 
+import { Server } from 'socket.io';
+
 const MONGODB_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PWD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DBNAME}?authSource=${process.env.MONGODB_AUTH_SOURCE}`;
 
 const app = express();
@@ -51,6 +53,13 @@ app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) 
 })
 
 connect(MONGODB_URI)
-  .then(() => app.listen(8080))
+  .then(() => {
+    const server = app.listen(8080);
+    const io = new Server(server);
+
+    io.on('connection', socket => {
+      console.log('Client connected');
+    });
+  })
   .then(() => console.log('App listening on port 8080'))
   .catch(err => console.error(err));

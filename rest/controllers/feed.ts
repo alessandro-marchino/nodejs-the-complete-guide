@@ -53,7 +53,8 @@ export const createPost: RequestHandler = async (req, res, next) => {
 export const getPost: RequestHandler = async (req, res, next) => {
   const postId = req.params.postId;
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId)
+      .populate('creator');
     if(!post) {
       const error: ErrorWithStatus = new Error('Could not find post.');
       error.statusCode = 404;
