@@ -5,9 +5,10 @@ import { connect } from 'mongoose';
 import { join } from 'path';
 import multer, { diskStorage, FileFilterCallback } from 'multer';
 
-import feedRouter from './routes/feed.js';
+import feedRouter from './routes/feed';
+import authRouter from './routes/auth';
 
-import { ErrorWithStatus } from './models/error-with-status.js';
+import { ErrorWithStatus } from './models/error-with-status';
 import { randomUUID } from 'crypto';
 
 const MONGODB_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PWD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DBNAME}?authSource=${process.env.MONGODB_AUTH_SOURCE}`;
@@ -40,6 +41,7 @@ app.use((_, res, next) => {
 });
 
 app.use('/feed', feedRouter);
+app.use('/auth', authRouter);
 
 app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) => {
   console.log('wawa', err);
