@@ -87,6 +87,23 @@ export const updatePost: RequestHandler = (req, res, next) => {
     .catch(err => next(err));
 }
 
+export const deletePost: RequestHandler = (req, res, next) => {
+  const postId = req.params.postId;
+  Post.findById(postId)
+    .then(post => {
+      // Check logged in user
+      if(!post) {
+        const error: ErrorWithStatus = new Error('Could not find post.');
+        error.statusCode = 404;
+        throw error;
+      }
+      clearImage(post.imageUrl);
+      return post.deleteOne();
+    })
+    .then(post => res.status(200).json({ message: 'Post deleted successfully!', post }))
+    .catch(err => next(err));
+}
+
 function clearImage(filePath: string): void {
   const completeFilePath = join(__dirname, '..', filePath);
   unlink(completeFilePath, err => {

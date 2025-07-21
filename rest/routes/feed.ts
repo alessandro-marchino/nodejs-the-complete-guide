@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPost, getPost, getPosts, updatePost } from '../controllers/feed.js';
+import { createPost, deletePost, getPost, getPosts, updatePost } from '../controllers/feed.js';
 import { body } from 'express-validator';
 
 const router = Router();
@@ -23,5 +23,6 @@ router.put('/posts/:postId', [
     .trim()
     .isLength({ min: 5 })
 ], updatePost);
+router.delete('/posts/:postId', deletePost);
 
 export default router;
