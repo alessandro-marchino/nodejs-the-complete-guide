@@ -49,3 +49,19 @@ export const postLogin: RequestHandler = (req, res, next) => {
     })
     .catch(err => next(err));
 }
+
+export const getStatus: RequestHandler = (req, res, next) => {
+  User.findById(res.locals.userId)
+    .then(user => res.status(200).json({ message: 'Status fetched correctly.', status: user?.status}))
+    .catch(err => next(err));
+}
+
+export const patchStatus: RequestHandler = (req, res, next) => {
+  User.findById(res.locals.userId)
+    .then(user => {
+      user!.status = req.body.status;
+      return user?.save();
+    })
+    .then(() => res.status(200).json({ message: 'Status updated successfully.'}))
+    .catch(err => next(err));
+}
