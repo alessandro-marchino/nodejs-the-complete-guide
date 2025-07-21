@@ -17,18 +17,18 @@ const userSchema = new Schema({
     type: String,
     default: 'I am new!'
   },
-  post: [{
+  posts: [{
     type: Schema.Types.ObjectId,
     ref: 'Post'
   }]
 });
 
 export const User = model('User', userSchema);
-export type UserType = Document<unknown, {}, { password: string; email: string; name: string; status: string; post: Types.ObjectId[]; }, {}> & {
+export type UserType = Document<unknown, {}, { password: string; email: string; name: string; status: string; posts: Types.ObjectId[]; }, {}> & {
   _id: Types.ObjectId;
   password: string;
   email: string;
   name: string;
   status: string;
-  post: Types.ObjectId[];
+  posts: Types.ObjectId[];
 };

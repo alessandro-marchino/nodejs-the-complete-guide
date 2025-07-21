@@ -4,6 +4,10 @@ import { env } from "process";
 import { ErrorWithStatus } from "../models/error-with-status";
 
 export const isAuth: RequestHandler = (req, res, next) => {
+  if(req.method === 'OPTIONS') {
+    return next();
+  }
+
   const token = req.get('Authorization')?.split(' ')?.[1] ?? '';
   if(!token) {
     const error: ErrorWithStatus = new Error('Not Authenticated.');

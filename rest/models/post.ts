@@ -14,16 +14,16 @@ const postSchema = new Schema({
     required: true
   },
   creator: {
-    type: Object,
+    type: Schema.Types.ObjectId,
     required: true
   },
 }, { timestamps: true });
 
 export const Post = model('Post', postSchema);
-export type PostType = Document<unknown, {}, { title: string; imageUrl: string; content: string; creator: any; }, {}> & {
+export type PostType = Document<unknown, {}, { title: string; imageUrl: string; content: string; creator: Types.ObjectId; }, {}> & {
   _id: Types.ObjectId;
   title: string;
   imageUrl: string;
   content: string;
-  creator: any;
+  creator: Types.ObjectId;
 };

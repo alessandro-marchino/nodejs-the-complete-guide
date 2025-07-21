@@ -1,9 +1,10 @@
 import { RequestHandler } from 'express';
 import { validationResult } from 'express-validator';
-import { Post } from '../models/post';
+import { Post, PostType } from '../models/post';
 import { ErrorWithStatus } from '../models/error-with-status';
 import { join } from 'path';
 import { unlink } from 'fs';
+import { User, UserType } from '../models/user';
 
 export const getPosts: RequestHandler = (req, res, next) => {
   console.log(res.locals)
@@ -34,14 +35,27 @@ export const createPost: RequestHandler = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+  let post: PostType;
+  let creator: UserType;
   new Post({
     title: req.body.title,
     content: req.body.content,
     imageUrl: req.file.path,
-    creator: { name: 'Maximilian' }
+    creator: res.locals.userId
   })
     .save()
-    .then(post => res.status(201).json({ message: 'Post created successfully!', post }))
+    .then(createdPost => {
+      post = createdPost;
+      return User.findById(res.locals.userId)
+    })
+    .then(user => {
+      creator = user!;
+      user!.posts.push(post._id)
+      return user!.save();
+    })
+    .then(user => {
+      return res.status(201).json({ message: 'Post created successfully!', post, creator });
+    })
     .catch(err => next(err));
 }
 
@@ -84,6 +98,11 @@ export const updatePost: RequestHandler = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
+      if(!post.creator.equals(res.locals.userId)) {
+        const error: ErrorWithStatus = new Error('Not authorized.');
+        error.statusCode = 403;
+        throw error;
+      }
       if(imageUrl !== post.imageUrl) {
         clearImage(post.imageUrl);
       }
@@ -104,6 +123,11 @@ export const deletePost: RequestHandler = (req, res, next) => {
       if(!post) {
         const error: ErrorWithStatus = new Error('Could not find post.');
         error.statusCode = 404;
+        throw error;
+      }
+      if(!post.creator.equals(res.locals.userId)) {
+        const error: ErrorWithStatus = new Error('Not authorized.');
+        error.statusCode = 403;
         throw error;
       }
       clearImage(post.imageUrl);
