@@ -34,3 +34,4 @@ STRIPE_PRIVATE_KEY=<the Stripe private key>
 ### Users
 
 - test@test.com - test1
+- test2@test.com - test2 (only for REST app)
