@@ -3,17 +3,13 @@ import express, { NextFunction, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import { connect } from 'mongoose';
 import { join } from 'path';
+import { randomUUID } from 'crypto';
 import multer, { diskStorage, FileFilterCallback } from 'multer';
-
-import feedRouter from './routes/feed';
-import authRouter from './routes/auth';
+import { graphqlHTTP } from 'express-graphql';
 
 import { ErrorWithStatus } from './models/error-with-status';
-import { randomUUID } from 'crypto';
-import { isAuth } from './middleware/isAuth';
-
-import { Server } from 'socket.io';
-import { initSocket } from './util/socket';
+import graphQLSchema from './graphql/schema';
+import graphQLResolver from './graphql/resolvers';
 
 const MONGODB_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PWD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DBNAME}?authSource=${process.env.MONGODB_AUTH_SOURCE}`;
 
@@ -44,22 +40,17 @@ app.use((_, res, next) => {
   next();
 });
 
-app.use('/feed', isAuth, feedRouter);
-app.use('/auth', authRouter);
-
 app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) => {
   const statusCode = err.statusCode ?? 500;
   const message = err.message;
   res.status(statusCode).json({ message, payload: err.payload });
-})
+});
+
+app.use('/graphql', graphqlHTTP({
+  schema: graphQLSchema,
+  rootValue: graphQLResolver
+}));
 
 connect(MONGODB_URI)
-  .then(() => {
-    const server = app.listen(8080);
-    const io = initSocket(server);
-    io.on('connection', socket => {
-      console.log('Client connected');
-    });
-  })
-  .then(() => console.log('App listening on port 8080'))
+  .then(() => app.listen(8080, () => console.log('App listening on port 8080')))
   .catch(err => console.error(err));
