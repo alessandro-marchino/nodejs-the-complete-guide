@@ -63,7 +63,8 @@ app.post('/graphql', auth, createHandler({
     const message = err.message || 'An error occurred'
     const status = ((err as GraphQLError)?.originalError as ErrorWithStatus)?.statusCode || 500;
     return { name: '', message, status, payload };
-  }
+  },
+  context: (req, res) => ({ isAuth: req.raw.isAuth, userId: req.raw.userId })
 }));
 
 app.get('/graphql', (_req, res) => {

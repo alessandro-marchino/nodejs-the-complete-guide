@@ -77,18 +77,14 @@ class App extends Component {
       },
       body: JSON.stringify(graphqlQuery)
     })
-      .then(res => {
-        if (res.status === 422) {
-          throw new Error('Validation failed.');
-        }
-        if (res.status !== 200 && res.status !== 201) {
-          console.log('Error!');
-          throw new Error('Could not authenticate you!');
-        }
-        return res.json();
-      })
+      .then(res => res.json())
       .then(resData => {
-        console.log(resData);
+        if (resData.errors && resData.errors[0].status === 422) {
+          throw new Error("Validation failed. Make sure the email address isn't used yet!");
+        }
+        if (resData.errors) {
+          throw new Error("User creation failed!");
+        }
         this.setState({
           isAuth: true,
           token: resData.data.login.token,
@@ -140,9 +136,7 @@ class App extends Component {
       },
       body: JSON.stringify(graphqlQuery)
     })
-      .then(res => {
-        return res.json();
-      })
+      .then(res => res.json())
       .then(resData => {
         if (resData.errors && resData.errors[0].status === 422) {
           throw new Error("Validation failed. Make sure the email address isn't used yet!");
