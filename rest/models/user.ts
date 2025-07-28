@@ -1,6 +1,19 @@
-import { Document, model, ObjectId, Schema, Types } from 'mongoose';
+import { Document, model, Schema, Types } from 'mongoose';
 
-const userSchema = new Schema({
+export interface UserInterface {
+  password: string;
+  email: string;
+  name: string;
+  status: string;
+  posts: Types.ObjectId[];
+}
+export interface UserDocument extends UserInterface, Document<string> {
+  createdAt: Date;
+  updatedAt: Date;
+  _doc?: any;
+}
+
+const userSchema = new Schema<UserDocument>({
   email: {
     type: String,
     required: true
@@ -24,11 +37,3 @@ const userSchema = new Schema({
 });
 
 export const User = model('User', userSchema);
-export type UserType = Document<unknown, {}, { password: string; email: string; name: string; status: string; posts: Types.ObjectId[]; }, {}> & {
-  _id: Types.ObjectId;
-  password: string;
-  email: string;
-  name: string;
-  status: string;
-  posts: Types.ObjectId[];
-};

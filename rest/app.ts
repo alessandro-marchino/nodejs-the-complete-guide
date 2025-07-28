@@ -5,7 +5,8 @@ import { connect } from 'mongoose';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 import multer, { diskStorage, FileFilterCallback } from 'multer';
-import { graphqlHTTP } from 'express-graphql';
+import { createHandler } from 'graphql-http/lib/use/express';
+import { ruruHTML } from 'ruru/server';
 
 import { ErrorWithStatus } from './models/error-with-status';
 import graphQLSchema from './graphql/schema';
@@ -46,11 +47,15 @@ app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) 
   res.status(statusCode).json({ message, payload: err.payload });
 });
 
-app.use('/graphql', graphqlHTTP({
+app.post('/graphql', createHandler({
   schema: graphQLSchema,
-  rootValue: graphQLResolver,
-  graphiql: true
+  rootValue: graphQLResolver
 }));
+
+app.get('/graphql', (_req, res) => {
+  res.type('html');
+  res.end(ruruHTML({ endpoint: '/graphql' }));
+});
 
 connect(MONGODB_URI)
   .then(() => app.listen(8080, () => console.log('App listening on port 8080')))

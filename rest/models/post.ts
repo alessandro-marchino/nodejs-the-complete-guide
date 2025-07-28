@@ -1,6 +1,18 @@
 import { Document, model, Schema, Types } from 'mongoose';
 
-const postSchema = new Schema({
+export interface PostInterface {
+  title: string;
+  imageUrl: string;
+  content: string;
+  creator: Types.ObjectId;
+}
+export interface PostDocument extends PostInterface, Document<string> {
+  createdAt: Date;
+  updatedAt: Date;
+  _doc?: any;
+}
+
+const postSchema = new Schema<PostDocument>({
   title: {
     type: String,
     required: true
@@ -21,10 +33,3 @@ const postSchema = new Schema({
 }, { timestamps: true });
 
 export const Post = model('Post', postSchema);
-export type PostType = Document<unknown, {}, { title: string; imageUrl: string; content: string; creator: Types.ObjectId; }, {}> & {
-  _id: Types.ObjectId;
-  title: string;
-  imageUrl: string;
-  content: string;
-  creator: Types.ObjectId;
-};

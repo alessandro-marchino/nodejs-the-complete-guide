@@ -1,6 +1,6 @@
 import { type RequestHandler } from 'express';
 import { validationResult } from 'express-validator';
-import { User, UserType } from '../models/user';
+import { User, UserDocument } from '../models/user';
 import { type ErrorWithStatus } from '../models/error-with-status';
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
@@ -25,7 +25,7 @@ export const putSignup: RequestHandler = async (req, res, next) => {
 
 export const postLogin: RequestHandler = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user: UserDocument | null = await User.findOne({ email: req.body.email });
     if(!user) {
       const error: ErrorWithStatus = new Error('Login error.');
       error.statusCode = 401;
