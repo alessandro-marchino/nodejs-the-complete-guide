@@ -134,6 +134,7 @@ export const deletePost: RequestHandler = async (req, res, next) => {
     const user = await User.findById(res.locals.userId);
     user!.posts = user!.posts.filter(p => !p._id.equals(postId));
     await user!.save();
+    getIO().emit('posts', { action: 'delete', post: postId });
     return res.status(200).json({ message: 'Post deleted successfully!' });
   } catch (err) {
     next(err);
