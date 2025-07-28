@@ -12,6 +12,7 @@ import { ErrorWithStatus } from './models/error-with-status';
 import graphQLSchema from './graphql/schema';
 import graphQLResolver from './graphql/resolvers';
 import { GraphQLError } from 'graphql';
+import { auth } from './middleware/auth';
 
 const MONGODB_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PWD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DBNAME}?authSource=${process.env.MONGODB_AUTH_SOURCE}`;
 
@@ -51,7 +52,7 @@ app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) 
   res.status(statusCode).json({ message, payload: err.payload });
 });
 
-app.post('/graphql', createHandler({
+app.post('/graphql', auth, createHandler({
   schema: graphQLSchema,
   rootValue: graphQLResolver,
   formatError(err) {

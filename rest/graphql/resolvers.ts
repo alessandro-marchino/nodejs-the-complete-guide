@@ -7,6 +7,8 @@ import { ErrorWithStatus } from "../models/error-with-status";
 import { sign } from "jsonwebtoken";
 import { env } from "process";
 import { Post } from "../models/post";
+import { Request } from "express";
+import { Types } from "mongoose";
 
 const Resolvers = {
   createUser: async ({ userInput }: { userInput: GraphQLUserInputData }, req: unknown) => {
@@ -35,7 +37,13 @@ const Resolvers = {
     const user = await new User({ email: userInput.email, password: hashedPassword, name: userInput.name }).save();
     return { ...user._doc, _id: user._id.toString() };
   },
-  createPost: async({ postInput }: { postInput: GraphQLPostInputData }, req: unknown) => {
+  createPost: async({ postInput }: { postInput: GraphQLPostInputData }, req: Request) => {
+    if(!req.isAuth) {
+      const e: ErrorWithStatus = new Error('Not authenticated!');
+      e.statusCode = 401;
+      throw e;
+    }
+
     const errors = [];
     if(isEmpty(postInput.title) || !isLength(postInput.title, { min: 5 })) {
       errors.push({ message: 'Title too short' });
@@ -55,16 +63,21 @@ const Resolvers = {
     //   error.statusCode = 422;
     //   throw error;
     // }
+
+    const creator = await User.findById(req.userId);
+    if(!creator) {
+      const e: ErrorWithStatus = new Error('Invalid user');
+      e.statusCode = 401;
+      throw e;
+    }
     const post = await new Post({
       title: postInput.title,
       content: postInput.content,
-      imageUrl: postInput.imageUrl
-      // creator: res.locals.userId
+      imageUrl: postInput.imageUrl,
+      creator
     }).save();
-    // const creator = await User.findById(res.locals.userId);
-    // (creator!.posts as Types.ObjectId[]).push(post._id);
-    // await creator!.save();
-    // await post.populate('creator')
+    (creator.posts as Types.ObjectId[]).push(post._id);
+    await creator.save();
     return { ...post._doc, _id: post._id.toString(), createdAt: post.createdAt.toISOString(), updatedAt: post.updatedAt.toISOString()};
   },
 
