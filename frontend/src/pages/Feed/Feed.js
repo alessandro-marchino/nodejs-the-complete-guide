@@ -22,17 +22,17 @@ class Feed extends Component {
   };
 
   componentDidMount() {
-    fetch('http://localhost:8080/auth/status', { headers: { Authorization: `Bearer ${this.props.token}` }})
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Failed to fetch user status.');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        this.setState({ status: resData.status });
-      })
-      .catch(this.catchError);
+    // fetch('http://localhost:8080/auth/status', { headers: { Authorization: `Bearer ${this.props.token}` }})
+    //   .then(res => {
+    //     if (res.status !== 200) {
+    //       throw new Error('Failed to fetch user status.');
+    //     }
+    //     return res.json();
+    //   })
+    //   .then(resData => {
+    //     this.setState({ status: resData.status });
+    //   })
+    //   .catch(this.catchError);
 
     this.loadPosts();
   }
@@ -50,17 +50,40 @@ class Feed extends Component {
       page--;
       this.setState({ postPage: page });
     }
-    fetch(`http://localhost:8080/feed/posts?page=${page}`, { headers: { Authorization: `Bearer ${this.props.token}` }})
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Failed to fetch posts.');
+    const graphqlQuery = {
+      query: `
+        query {
+          posts {
+            posts {
+              _id
+              title
+              content
+              creator {
+                name
+              }
+              createdAt
+            }
+            totalPosts
+          }
         }
-        return res.json();
-      })
+      `
+    };
+    fetch(`http://localhost:8080/graphql`, {
+      method: 'POST',
+      body: JSON.stringify(graphqlQuery),
+      headers: {
+        Authorization: `Bearer ${this.props.token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => res.json())
       .then(resData => {
+        if (resData.errors) {
+          throw new Error("Fetching Posts failed!");
+        }
         this.setState({
-          posts: resData.posts.map(post => ({ ...post , imagePath: post.imageUrl })),
-          totalPosts: resData.totalItems,
+          posts: resData.data.posts.posts.map(post => ({ ...post , imagePath: post.imageUrl })),
+          totalPosts: resData.data.posts.totalPosts,
           postsLoading: false
         });
       })
