@@ -31,7 +31,6 @@ export const postLogin: RequestHandler = async (req, res, next) => {
       error.statusCode = 401;
       throw error;
     }
-    user.email;
     const isEquals = await compare(req.body.password, user.password);
     if(!isEquals) {
       const error: ErrorWithStatus = new Error('Login error.');

@@ -1,8 +1,10 @@
 import { UserInputData } from "./types/user-input-data";
 import { User } from "../models/user";
-import { hash } from "bcryptjs";
+import { compare, hash } from "bcryptjs";
 import { isEmpty, isEmail, isLength } from "validator";
 import { ErrorWithStatus } from "../models/error-with-status";
+import { sign } from "jsonwebtoken";
+import { env } from "process";
 
 const Resolvers = {
   createUser: async ({ userInput }: { userInput: UserInputData }, req: unknown) => {
@@ -17,7 +19,7 @@ const Resolvers = {
       errors.push({ message: 'Name must not be empty' });
     }
     if(errors.length) {
-      const e = new Error('Invalid input') as ErrorWithStatus;
+      const e: ErrorWithStatus = new Error('Invalid input');
       e.payload = errors;
       e.statusCode = 422;
       throw e;
@@ -32,7 +34,27 @@ const Resolvers = {
     return { ...user._doc, _id: user._id.toString() };
   },
 
-  hello: () => 'Hello World!'
+  login: async ({ email, password }: { email: string, password: string}) => {
+    const user = await User.findOne({ email: email });
+    if(!user) {
+      const error: ErrorWithStatus = new Error('Login error.');
+      error.statusCode = 401;
+      throw error;
+    }
+    const isEquals = await compare(password, user.password);
+    if(!isEquals) {
+      const error: ErrorWithStatus = new Error('Login error.');
+      error.statusCode = 401;
+      throw error;
+    }
+    // Correct password
+    const token = sign(
+      { email: user.email, userId: user._id.toString() },
+      env.JWT_PRIVATE_KEY!,
+      { expiresIn: '1h' }
+    );
+    return { token, userId: user._id.toString() };
+  }
 };
 
 export default Resolvers;
