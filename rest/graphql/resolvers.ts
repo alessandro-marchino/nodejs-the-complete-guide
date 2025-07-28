@@ -11,7 +11,7 @@ import { Request } from "express";
 import { Types } from "mongoose";
 
 const Resolvers = {
-  createUser: async ({ userInput }: { userInput: GraphQLUserInputData }, req: unknown) => {
+  createUser: async ({ userInput }: { userInput: GraphQLUserInputData }) => {
     const errors = [];
     if(!isEmail(userInput.email)) {
       errors.push({ message: 'E-Mail is invalid' });
@@ -37,7 +37,7 @@ const Resolvers = {
     const user = await new User({ email: userInput.email, password: hashedPassword, name: userInput.name }).save();
     return { ...user._doc, _id: user._id.toString() };
   },
-  createPost: async({ postInput }: { postInput: GraphQLPostInputData }, req: Request) => {
+  createPost: async({ postInput }: { postInput: GraphQLPostInputData }, req: GraphQL.Context) => {
     if(!req.isAuth) {
       const e: ErrorWithStatus = new Error('Not authenticated!');
       e.statusCode = 401;
@@ -101,6 +101,18 @@ const Resolvers = {
       { expiresIn: '1h' }
     );
     return { token, userId: user._id.toString() };
+  },
+  posts: async (_: unknown, req: GraphQL.Context) => {
+    if(!req.isAuth) {
+      const e: ErrorWithStatus = new Error('Not authenticated!');
+      e.statusCode = 401;
+      throw e;
+    }
+    const totalPosts = await Post.find().countDocuments();
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .populate('creator');
+    return { posts: posts.map(p => ({ ...p._doc, _id: p._id.toString(), createdAt: p.createdAt.toISOString(), updatedAt: p.updatedAt.toISOString() })), totalPosts };
   }
 };
 

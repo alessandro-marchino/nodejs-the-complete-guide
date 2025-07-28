@@ -159,6 +159,7 @@ class Feed extends Component {
             editLoading: false
           };
         });
+        return this.loadPosts();
       })
       .catch(err => {
         console.log(err);
@@ -189,6 +190,7 @@ class Feed extends Component {
       })
       .then(resData => {
         console.log(resData);
+        return this.loadPosts();
       })
       .catch(err => {
         console.log(err);
