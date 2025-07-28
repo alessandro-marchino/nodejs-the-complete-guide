@@ -48,7 +48,8 @@ app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) 
 
 app.use('/graphql', graphqlHTTP({
   schema: graphQLSchema,
-  rootValue: graphQLResolver
+  rootValue: graphQLResolver,
+  graphiql: true
 }));
 
 connect(MONGODB_URI)
