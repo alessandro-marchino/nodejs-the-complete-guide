@@ -1,12 +1,13 @@
 import { Document, model, Schema, Types } from 'mongoose';
+import { UserDocument } from './user';
 
 export interface PostInterface {
   title: string;
   imageUrl: string;
   content: string;
-  creator: Types.ObjectId;
+  creator: UserDocument | Types.ObjectId;
 }
-export interface PostDocument extends PostInterface, Document<string> {
+export interface PostDocument extends PostInterface, Document<Types.ObjectId> {
   createdAt: Date;
   updatedAt: Date;
   _doc?: any;

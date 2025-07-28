@@ -1,11 +1,12 @@
 import { RequestHandler } from 'express';
 import { validationResult } from 'express-validator';
-import { Post } from '../models/post';
+import { Post, PostDocument } from '../models/post';
 import { ErrorWithStatus } from '../models/error-with-status';
 import { join } from 'path';
 import { unlink } from 'fs';
 import { User } from '../models/user';
 import { getIO } from '../util/socket';
+import { Types } from 'mongoose';
 
 export const getPosts: RequestHandler = async (req, res, next) => {
   const currentPage = +(req.query.page || 1);
@@ -44,7 +45,7 @@ export const createPost: RequestHandler = async (req, res, next) => {
       creator: res.locals.userId
     }).save();
     const creator = await User.findById(res.locals.userId);
-    creator!.posts.push(post._id);
+    (creator!.posts as Types.ObjectId[]).push(post._id);
     await creator!.save();
     await post.populate('creator')
     getIO().emit('posts', { action: 'create', post });
@@ -132,7 +133,7 @@ export const deletePost: RequestHandler = async (req, res, next) => {
     clearImage(post.imageUrl);
     await post.deleteOne();
     const user = await User.findById(res.locals.userId);
-    user!.posts = user!.posts.filter(p => !p._id.equals(postId));
+    user!.posts = user!.posts.filter(p => !(p as PostDocument)._id.equals(postId)) as PostDocument[];
     await user!.save();
     getIO().emit('posts', { action: 'delete', post: postId });
     return res.status(200).json({ message: 'Post deleted successfully!' });
