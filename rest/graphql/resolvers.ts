@@ -7,8 +7,9 @@ import { ErrorWithStatus } from "../models/error-with-status";
 import { sign } from "jsonwebtoken";
 import { env } from "process";
 import { Post } from "../models/post";
-import { Request } from "express";
 import { Types } from "mongoose";
+
+const PER_PAGE = 2;
 
 const Resolvers = {
   createUser: async ({ userInput }: { userInput: GraphQLUserInputData }) => {
@@ -102,7 +103,7 @@ const Resolvers = {
     );
     return { token, userId: user._id.toString() };
   },
-  posts: async (_: unknown, req: GraphQL.Context) => {
+  posts: async ({ page }: { page?: number }, req: GraphQL.Context) => {
     if(!req.isAuth) {
       const e: ErrorWithStatus = new Error('Not authenticated!');
       e.statusCode = 401;
@@ -111,8 +112,13 @@ const Resolvers = {
     const totalPosts = await Post.find().countDocuments();
     const posts = await Post.find()
       .sort({ createdAt: -1 })
+      .skip(((page || 1) - 1) * PER_PAGE)
+      .limit(PER_PAGE)
       .populate('creator');
-    return { posts: posts.map(p => ({ ...p._doc, _id: p._id.toString(), createdAt: p.createdAt.toISOString(), updatedAt: p.updatedAt.toISOString() })), totalPosts };
+    return {
+      posts: posts.map(p => ({ ...p._doc, _id: p._id.toString(), createdAt: p.createdAt.toISOString(), updatedAt: p.updatedAt.toISOString() })),
+      totalPosts
+    };
   }
 };
 
