@@ -11,6 +11,7 @@ import { ruruHTML } from 'ruru/server';
 import { ErrorWithStatus } from './models/error-with-status';
 import graphQLSchema from './graphql/schema';
 import graphQLResolver from './graphql/resolvers';
+import { GraphQLError } from 'graphql';
 
 const MONGODB_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PWD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DBNAME}?authSource=${process.env.MONGODB_AUTH_SOURCE}`;
 
@@ -49,7 +50,16 @@ app.use((err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) 
 
 app.post('/graphql', createHandler({
   schema: graphQLSchema,
-  rootValue: graphQLResolver
+  rootValue: graphQLResolver,
+  formatError(err) {
+    if(!(err as GraphQLError).originalError) {
+      return err;
+    }
+    const payload = ((err as GraphQLError)?.originalError as ErrorWithStatus)?.payload;
+    const message = err.message || 'An error occurred'
+    const status = ((err as GraphQLError)?.originalError as ErrorWithStatus)?.statusCode || 500;
+    return { name: '', message, status, payload };
+  }
 }));
 
 app.get('/graphql', (_req, res) => {
