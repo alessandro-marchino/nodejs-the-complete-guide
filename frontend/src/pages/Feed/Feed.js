@@ -58,6 +58,7 @@ class Feed extends Component {
               _id
               title
               content
+              imageUrl
               creator {
                 name
               }
@@ -138,61 +139,72 @@ class Feed extends Component {
       editLoading: true
     });
     const formData = new FormData();
-    formData.append('title', postData.title);
-    formData.append('content', postData.content);
     formData.append('image', postData.image);
-    let graphqLQuery = {
-      query: `
-        mutation {
-          createPost(postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "someURL"}) {
-            _id
-            title
-            content
-            imageUrl
-            creator {
-              name
-            }
-            createdAt
-          }
-        }
-      `
-    };
-
-    fetch('http://localhost:8080/graphql', {
-      method: 'POST',
-      body: JSON.stringify(graphqLQuery),
+    if(this.state.editPost) {
+      formData.append('oldPath', this.state.editPost.imagePath);
+    }
+    fetch('http://localhost:8080/post-image', {
+      method: 'PUT',
       headers: {
         Authorization: `Bearer ${this.props.token}`,
-        'Content-Type': 'application/json'
-      }
+      },
+      body: formData
     })
-      .then(res => res.json())
-      .then(resData => {
-        if (resData.errors && resData.errors[0].status === 422) {
-          throw new Error("Validation failed. Make sure the email address isn't used yet!");
+    .then(res => res.json())
+    .then(fileResData => {
+      const imageUrl = fileResData.filePath;
+      const graphqLQuery = {
+        query: `
+          mutation {
+            createPost(postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
+              _id
+              title
+              content
+              imageUrl
+              creator {
+                name
+              }
+              createdAt
+            }
+          }
+        `
+      };
+      return fetch('http://localhost:8080/graphql', {
+        method: 'POST',
+        body: JSON.stringify(graphqLQuery),
+        headers: {
+          Authorization: `Bearer ${this.props.token}`,
+          'Content-Type': 'application/json'
         }
-        if (resData.errors) {
-          throw new Error("Post creation failed!");
-        }
-        console.log(resData);
-        this.setState(() => {
-          return {
-            isEditing: false,
-            editPost: null,
-            editLoading: false
-          };
-        });
-        return this.loadPosts();
       })
-      .catch(err => {
-        console.log(err);
-        this.setState({
+    })
+    .then(res => res.json())
+    .then(resData => {
+      if (resData.errors && resData.errors[0].status === 422) {
+        throw new Error("Validation failed. Make sure the email address isn't used yet!");
+      }
+      if (resData.errors) {
+        throw new Error("Post creation failed!");
+      }
+      console.log(resData);
+      this.setState(() => {
+        return {
           isEditing: false,
           editPost: null,
-          editLoading: false,
-          error: err
-        });
+          editLoading: false
+        };
       });
+      return this.loadPosts();
+    })
+    .catch(err => {
+      console.log(err);
+      this.setState({
+        isEditing: false,
+        editPost: null,
+        editLoading: false,
+        error: err
+      });
+    });
   };
 
   statusInputChangeHandler = (input, value) => {

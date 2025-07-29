@@ -77,7 +77,7 @@ const Resolvers = {
       imageUrl: postInput.imageUrl,
       creator
     }).save();
-    (creator.posts as Types.ObjectId[]).push(post._id);
+    creator.posts.push(post._id);
     await creator.save();
     return { ...post._doc, _id: post._id.toString(), createdAt: post.createdAt.toISOString(), updatedAt: post.updatedAt.toISOString()};
   },

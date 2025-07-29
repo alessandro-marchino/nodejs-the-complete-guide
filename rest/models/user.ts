@@ -6,7 +6,7 @@ export interface UserInterface {
   email: string;
   name: string;
   status: string;
-  posts: Types.ObjectId[] | PostDocument[];
+  posts: Types.ObjectId[];
 }
 export interface UserDocument extends UserInterface, Document<Types.ObjectId> {
   createdAt: Date;
