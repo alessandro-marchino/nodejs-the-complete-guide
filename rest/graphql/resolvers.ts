@@ -8,6 +8,7 @@ import { sign } from "jsonwebtoken";
 import { env } from "process";
 import { Post } from "../models/post";
 import { Types } from "mongoose";
+import { GraphQLBoolean } from "graphql";
 
 const PER_PAGE = 2;
 
@@ -119,6 +120,21 @@ const Resolvers = {
       posts: posts.map(p => ({ ...p._doc, _id: p._id.toString(), createdAt: p.createdAt.toISOString(), updatedAt: p.updatedAt.toISOString() })),
       totalPosts
     };
+  },
+  post: async({ id }: { id: string }, req: GraphQL.Context) => {
+    console.log(id)
+    if(!req.isAuth) {
+      const e: ErrorWithStatus = new Error('Not authenticated!');
+      e.statusCode = 401;
+      throw e;
+    }
+    const post = await Post.findById(Types.ObjectId.createFromHexString(id)).populate('creator');
+    if(!post) {
+      const e: ErrorWithStatus = new Error('No Post found!');
+      e.statusCode = 404;
+      throw e;
+    }
+    return { ...post._doc, _id: post._id.toString(), createdAt: post.createdAt.toISOString(), updatedAt: post.updatedAt.toISOString() };
   }
 };
 
