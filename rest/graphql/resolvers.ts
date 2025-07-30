@@ -7,8 +7,8 @@ import { ErrorWithStatus } from "../models/error-with-status";
 import { sign } from "jsonwebtoken";
 import { env } from "process";
 import { Post } from "../models/post";
-import { Types } from "mongoose";
-import { GraphQLBoolean } from "graphql";
+import { startSession, Types } from "mongoose";
+import { clearImage } from "../util/file";
 
 const PER_PAGE = 2;
 
@@ -114,6 +114,36 @@ const Resolvers = {
     }
     const updatedPost = await post.save();
     return { ...updatedPost._doc, _id: updatedPost._id.toString(), createdAt: updatedPost.createdAt.toISOString(), updatedAt: updatedPost.updatedAt.toISOString()};
+  },
+  deletePost: async({ id }: { id: string }, req: GraphQL.Context) => {
+    if(!req.isAuth) {
+      const e: ErrorWithStatus = new Error('Not authenticated!');
+      e.statusCode = 401;
+      throw e;
+    }
+
+    const post = await Post.findById(id);
+    if(!post) {
+      const e: ErrorWithStatus = new Error('No Post found!');
+      e.statusCode = 404;
+      throw e;
+    }
+    if(!post.creator.equals(req.userId)) {
+      const e: ErrorWithStatus = new Error('Not authorized!');
+      e.statusCode = 403;
+      throw e;
+    }
+    const creator = await User.findById(req.userId);
+    if(!creator) {
+      const e: ErrorWithStatus = new Error('Invalid user');
+      e.statusCode = 401;
+      throw e;
+    }
+    await post.deleteOne();
+    clearImage(post.imageUrl);
+    creator.posts = creator.posts.filter(p => !p._id.equals(post._id));
+    await creator.save();
+    return true;
   },
 
   login: async ({ email, password }: { email: string, password: string}) => {

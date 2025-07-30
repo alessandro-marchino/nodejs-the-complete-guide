@@ -13,7 +13,7 @@ import graphQLSchema from './graphql/schema';
 import graphQLResolver from './graphql/resolvers';
 import { GraphQLError } from 'graphql';
 import { auth } from './middleware/auth';
-import { unlink } from 'fs';
+import { clearImage } from './util/file';
 
 const MONGODB_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PWD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DBNAME}?authSource=${process.env.MONGODB_AUTH_SOURCE}`;
 
@@ -89,7 +89,3 @@ app.get('/graphql', (_req, res) => {
 connect(MONGODB_URI)
   .then(() => app.listen(8080, () => console.log('App listening on port 8080')))
   .catch(err => console.error(err));
-
-const clearImage = (filePath: string) => {
-  unlink(filePath, err => console.log(err));
-};
