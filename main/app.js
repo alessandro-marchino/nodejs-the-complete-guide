@@ -9,6 +9,7 @@ import { csrfSync } from 'csrf-sync';
 import flash from 'connect-flash';
 import helmet from 'helmet';
 import compression from 'compression';
+import morgan from 'morgan';
 
 import adminRoutes from './routes/admin.js';
 import shopRoutes from './routes/shop.js';
@@ -19,6 +20,7 @@ import User from './model/user.js';
 import multer from 'multer';
 import { randomUUID } from 'crypto';
 import { env } from 'process';
+import { createWriteStream } from 'fs';
 
 const app = express();
 const store = new (MongoDbStore(Session))({
@@ -36,11 +38,14 @@ const fileFilter = (req, file, cb) => cb(null, file.mimetype === 'image/png'
   || file.mimetype === 'image/jpg'
   || file.mimetype === 'image/jpeg');
 
+const accessLogStream = createWriteStream(join(import.meta.dirname, 'logs', 'access.log'), { flags: 'a' });
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(helmet());
 app.use(compression());
+app.use(morgan('combined', { stream: accessLogStream }))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({ dest: 'images', storage: fileStorage, fileFilter }).single('image'));
 app.use(express.static(join(import.meta.dirname, 'public')));
