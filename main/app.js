@@ -19,8 +19,6 @@ import User from './model/user.js';
 import multer from 'multer';
 import { randomUUID } from 'crypto';
 import { env } from 'process';
-import { readFileSync } from 'fs';
-import { createServer } from 'https';
 
 const app = express();
 const store = new (MongoDbStore(Session))({
@@ -37,9 +35,6 @@ const fileStorage = multer.diskStorage({
 const fileFilter = (req, file, cb) => cb(null, file.mimetype === 'image/png'
   || file.mimetype === 'image/jpg'
   || file.mimetype === 'image/jpeg');
-
-const privateKey = readFileSync('server.key');
-const publicKey = readFileSync('server.cert');
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -91,8 +86,6 @@ app.use((err, req, res, next) => {
 })
 
 connect(env.DATABASE_URL)
-  .then(() => {
-    createServer({ key: privateKey, cert: publicKey }, app).listen(env.APP_PORT || 3000);
-  })
+  .then(() => app.listen(env.APP_PORT))
   .then(() => console.log('App listening on port 3000'))
   .catch(err => console.error(err));
