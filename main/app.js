@@ -8,6 +8,7 @@ import MongoDbStore from 'connect-mongodb-session';
 // import csrf from 'csurf';
 import { csrfSync } from 'csrf-sync';
 import flash from 'connect-flash';
+import helmet from 'helmet';
 
 import adminRoutes from './routes/admin.js';
 import shopRoutes from './routes/shop.js';
@@ -38,6 +39,7 @@ const fileFilter = (req, file, cb) => cb(null, file.mimetype === 'image/png'
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({ dest: 'images', storage: fileStorage, fileFilter }).single('image'));
 app.use(express.static(join(import.meta.dirname, 'public')));
