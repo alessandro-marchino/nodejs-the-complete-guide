@@ -17,12 +17,11 @@ import * as errorController from './controllers/error.js';
 import User from './model/user.js';
 import multer from 'multer';
 import { randomUUID } from 'crypto';
-
-const MONGODB_URI = 'mongodb://nodejscomplete:mypass@localhost:27017/nodejscomplete?authSource=nodejscomplete';
+import { env } from 'process';
 
 const app = express();
 const store = new (MongoDbStore(Session))({
-    uri: MONGODB_URI,
+    uri: env.DATABASE_URL,
     collection: 'sessions'
 });
 const { csrfSynchronisedProtection } = csrfSync({
@@ -83,7 +82,7 @@ app.use((err, req, res, next) => {
   errorController.get500(req, res)
 })
 
-connect(MONGODB_URI)
-  .then(() => app.listen(3000))
+connect(env.DATABASE_URL)
+  .then(() => app.listen(env.APP_PORT))
   .then(() => console.log('App listening on port 3000'))
   .catch(err => console.error(err));

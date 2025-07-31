@@ -22,6 +22,10 @@ db.createUser({ "user": "postapp", "pwd": "mypass", "roles": [ { "role": "readWr
 Configure the following configuration in the /main/.env file:
 
 ```
+APP_PORT=<the application port>
+
+DATABASE_URL=<the database URL>
+
 EMAIL_HOST=<the email host>
 EMAIL_PORT=<the email port>
 EMAIL_USER=<the email username>
