@@ -145,6 +145,32 @@ const Resolvers = {
     await creator.save();
     return true;
   },
+  updateStatus: async ({ status }: { status: string }, req: GraphQL.Context) => {
+    if(!req.isAuth) {
+      const e: ErrorWithStatus = new Error('Not authenticated!');
+      e.statusCode = 401;
+      throw e;
+    }
+    const errors = [];
+    if(isEmpty(status) || !isLength(status, { min: 2 })) {
+      errors.push({ message: 'Status too short' });
+    }
+    if(errors.length) {
+      const e: ErrorWithStatus = new Error('Invalid input');
+      e.payload = errors;
+      e.statusCode = 422;
+      throw e;
+    }
+    const user = await User.findById(req.userId);
+    if(!user) {
+      const e: ErrorWithStatus = new Error('No user found');
+      e.statusCode = 404;
+      throw e;
+    }
+    user.status = status;
+    await user.save();
+    return { ...user._doc, _id: user._id.toString() };
+  },
 
   login: async ({ email, password }: { email: string, password: string}) => {
     const user = await User.findOne({ email: email });
@@ -197,6 +223,20 @@ const Resolvers = {
       throw e;
     }
     return { ...post._doc, _id: post._id.toString(), createdAt: post.createdAt.toISOString(), updatedAt: post.updatedAt.toISOString() };
+  },
+  user: async (_: unknown, req: GraphQL.Context) => {
+    if(!req.isAuth) {
+      const e: ErrorWithStatus = new Error('Not authenticated!');
+      e.statusCode = 401;
+      throw e;
+    }
+    const user = await User.findById(req.userId);
+    if(!user) {
+      const e: ErrorWithStatus = new Error('No user found');
+      e.statusCode = 404;
+      throw e;
+    }
+    return { ...user._doc, _id: user._id.toString() };
   }
 };
 
