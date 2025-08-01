@@ -44,8 +44,10 @@ export const login: RequestHandler = async (req, res, next) => {
     }
     const token = sign({ email: user.email, userId: user._id.toString() }, env.JWT_PRIVATE_KEY as string, { expiresIn: '1h' } );
     res.status(200).json({ token, userId: user._id.toString() });
+    return;
   } catch (err) {
     next(err);
+    return err;
   }
 };
 
