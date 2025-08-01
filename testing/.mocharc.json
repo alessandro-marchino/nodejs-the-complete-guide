@@ -1,0 +1,8 @@
+{
+  "node-option": ["import=tsx"],
+  "recursive": true,
+  "extension": [
+    "ts",
+    "mts"
+  ]
+}
