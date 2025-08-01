@@ -4,5 +4,7 @@
   "extension": [
     "ts",
     "mts"
-  ]
+  ],
+  "env" : "dotenv_config_path=.env.test",
+  "require": "dotenv/config"
 }
