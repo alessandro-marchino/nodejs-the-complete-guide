@@ -1,5 +1,5 @@
-import fs from 'node:fs';
+import { join } from 'node:path';
 
 export const resHandler = (req, res) => {
-  fs.readFile('my-page.html', 'utf8', (err, data) => res.send(data));
+  res.sendFile(join(import.meta.dirname, 'my-page.html'));
 };
