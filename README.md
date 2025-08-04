@@ -15,6 +15,10 @@ db.createUser({ "user": "nodejscomplete", "pwd": "mypass", "roles": [ { "role": 
 use postapp
 db.createCollection('postapp')
 db.createUser({ "user": "postapp", "pwd": "mypass", "roles": [ { "role": "readWrite", "db": "postapp" } ] })
+
+use test-postapp
+db.createCollection('test-postapp')
+db.createUser({ "user": "test-postapp", "pwd": "mypass", "roles": [ { "role": "readWrite", "db": "test-postapp" } ] })
 ```
 
 ### Mail
