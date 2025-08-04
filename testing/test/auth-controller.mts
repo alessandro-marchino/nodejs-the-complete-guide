@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { SinonStub, stub } from 'sinon';
 import { User } from "../models/user.js";
 import { getUserStatus, login } from "../controllers/auth.js";
-import { connect } from "mongoose";
+import mongoose, { connect, disconnect } from "mongoose";
 
 describe('Auth Controller', () => {
   describe('Auth Controller - login', () => {
@@ -45,9 +45,11 @@ describe('Auth Controller', () => {
           .then(() => {
             expect(res.statusCode).to.be.equal(200);
             expect(res.userStatus).to.be.equal('I am new!');
-            done();
+            return User.deleteMany({})
           })
       })
-      .catch(err => done(err));
+      .then(() => done())
+      .catch(err => done(err))
+      .finally(() => disconnect());
   });
 });
