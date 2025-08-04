@@ -1,0 +1,6 @@
+{
+  "ignore": ["images/*", "public/*"],
+  "execMap": {
+    "ts": "tsx"
+  }
+}
