@@ -13,3 +13,7 @@ Commands for the Deno executable
 ## OAK framework
 
 `deno run --allow-net oak.ts`
+
+## REST API test
+
+`deno run --allow-net rest/app.ts`
