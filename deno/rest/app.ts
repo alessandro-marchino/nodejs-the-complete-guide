@@ -3,8 +3,11 @@ import todosRoutes from './routes/todos.ts';
 
 const app = new Application();
 
-app.use(async (_, next) => {
-  console.log('Middleware');
+app.use(async (ctx, next) => {
+  // CORS
+  ctx.response.headers.set('Access-Control-Allow-Origin', '*');
+  ctx.response.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
+  ctx.response.headers.set('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   await next();
 });
 
