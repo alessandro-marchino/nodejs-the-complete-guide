@@ -16,4 +16,4 @@ Commands for the Deno executable
 
 ## REST API test
 
-`deno run --allow-net rest/app.ts`
+`deno run --allow-net --allow-read --allow-sys --allow-env rest/app.ts`
