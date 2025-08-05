@@ -1,5 +1,9 @@
 import { Application } from "jsr:@oak/oak/application";
+import { connect } from './helpers/db_clients.ts';
+
 import todosRoutes from './routes/todos.ts';
+
+await connect();
 
 const app = new Application();
 
